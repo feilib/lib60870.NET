@@ -26,7 +26,9 @@ using System.Collections.Generic;
 
 namespace lib60870
 {
-
+    /// <summary>
+    /// ASDU 异常
+    /// </summary>
     public class ASDUParsingException : Exception
     {
 
@@ -43,6 +45,9 @@ namespace lib60870
     /// </summary>
     public class ASDU
     {
+        /// <summary>
+        /// 连接参数-主要104使用的
+        /// </summary>
         private ConnectionParameters parameters;
 
         private TypeID typeId;

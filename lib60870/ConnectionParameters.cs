@@ -25,164 +25,237 @@ using System;
 
 namespace lib60870
 {
+    /// <summary>
+    /// 这里主要是104规约中用到的应用参数
+    /// </summary>
 	public class ConnectionParameters
-	{
-
+    {
+        /// <summary>
+        /// 发送方未被确认的I格式的APDU最大数目 -- 默认12
+        /// </summary>
 		private int k = 12; /* number of unconfirmed APDUs in I format
 		                (range: 1 .. 32767 (2^15 - 1) - sender will
 		                stop transmission after k unconfirmed I messages */
 
+        /// <summary>
+        /// 接收方最多收到的未确认的I格式APDU数目，收到这么多必须确认了。。 --默认8
+        /// </summary>
 		private int w = 8; /* number of unconfirmed APDUs in I format 
 						      (range: 1 .. 32767 (2^15 - 1) - receiver
 						      will confirm latest after w messages */
 
-		private int t0 = 10; /* connection establishment (in s) */
+        /// <summary>
+        /// 网络建立连接超时时间--默认30
+        /// </summary>
+		private int t0 = 30; /* connection establishment (in s) */
 
-		private int t1 = 15; /* timeout for transmitted APDUs in I/U format (in s)
+        /// <summary>
+        /// 发送或者测试APDU的超时时间--默认20
+        /// </summary>
+		private int t1 = 20; /* timeout for transmitted APDUs in I/U format (in s)
 		                   when timeout elapsed without confirmation the connection
 		                   will be closed */
 
-		private int t2 = 10; /* timeout to confirm messages (in s) */
+        /// <summary>
+        /// 接收方无数据报文时的确认超时时间--默认15
+        /// </summary>
+		private int t2 = 15; /* timeout to confirm messages (in s) */
 
-		private int t3 = 20; /* time until test telegrams in case of idle connection */
+        /// <summary>
+        /// 通道长期空闲时，发送确认镇的超时时间--默认25
+        /// </summary>
+        private int t3 = 25; /* time until test telegrams in case of idle connection */
 
-		private int sizeOfTypeId = 1;
+        private int sizeOfTypeId = 1;
 
-		private int sizeOfVSQ = 1; /* VSQ = variable sturcture qualifier */
+        private int sizeOfVSQ = 1; /* VSQ = variable sturcture qualifier */
 
-		private int sizeOfCOT = 2; /* (parameter b) COT = cause of transmission (1/2) */
+        private int sizeOfCOT = 2; /* (parameter b) COT = cause of transmission (1/2) */
 
-		private int originatorAddress = 0;
+        private int originatorAddress = 0;
 
-		private int sizeOfCA = 2; /* (parameter a) CA = common address of ASDUs (1/2) */
-	
-		private int sizeOfIOA = 3; /* (parameter c) IOA = information object address (1/2/3) */
+        private int sizeOfCA = 2; /* (parameter a) CA = common address of ASDUs (1/2) */
 
-		public ConnectionParameters ()
-		{
-		}
+        private int sizeOfIOA = 3; /* (parameter c) IOA = information object address (1/2/3) */
 
-		public ConnectionParameters clone() {
-			ConnectionParameters copy = new ConnectionParameters();
+        public ConnectionParameters()
+        {
+        }
 
-			copy.k = k;
-			copy.w = w;
-			copy.t0 = t0;
-			copy.t1 = t1;
-			copy.t2 = t2;
-			copy.t3 = t3;
-			copy.sizeOfTypeId = sizeOfTypeId;
-			copy.sizeOfVSQ = sizeOfVSQ;
-			copy.sizeOfCOT = sizeOfCOT;
-			copy.originatorAddress = originatorAddress;
-			copy.sizeOfCA = sizeOfCA;
-			copy.sizeOfIOA = sizeOfIOA;
+        public ConnectionParameters clone()
+        {
+            ConnectionParameters copy = new ConnectionParameters();
 
-			return copy;
-		}
+            copy.k = k;
+            copy.w = w;
+            copy.t0 = t0;
+            copy.t1 = t1;
+            copy.t2 = t2;
+            copy.t3 = t3;
+            copy.sizeOfTypeId = sizeOfTypeId;
+            copy.sizeOfVSQ = sizeOfVSQ;
+            copy.sizeOfCOT = sizeOfCOT;
+            copy.originatorAddress = originatorAddress;
+            copy.sizeOfCA = sizeOfCA;
+            copy.sizeOfIOA = sizeOfIOA;
 
-		public int K {
-			get {
-				return this.k;
-			}
-			set {
-				k = value;
-			}
-		}
+            return copy;
+        }
 
-		public int W {
-			get {
-				return this.w;
-			}
-			set {
-				w = value;
-			}
-		}
+        /// <summary>
+        /// 发送方未被确认的I格式的APDU最大数目
+        /// </summary>
+        public int K
+        {
+            get
+            {
+                return this.k;
+            }
+            set
+            {
+                k = value;
+            }
+        }
 
-		public int T0 {
-			get {
-				return this.t0;
-			}
-			set {
-				t0 = value;
-			}
-		}
+        /// <summary>
+        /// 接收方最多收到的未确认的I格式APDU数目，收到这么多必须确认了。。 -- 默认8
+        /// </summary>
+        public int W
+        {
+            get
+            {
+                return this.w;
+            }
+            set
+            {
+                w = value;
+            }
+        }
 
-		public int T1 {
-			get {
-				return this.t1;
-			}
-			set {
-				t1 = value;
-			}
-		}
+        /// <summary>
+        /// 网络建立连接超时时间--默认30
+        /// </summary>
+        public int T0
+        {
+            get
+            {
+                return this.t0;
+            }
+            set
+            {
+                t0 = value;
+            }
+        }
 
-		public int T2 {
-			get {
-				return this.t2;
-			}
-			set {
-				t2 = value;
-			}
-		}
+        /// <summary>
+        /// 发送或者测试APDU的超时时间--默认20
+        /// </summary>
+        public int T1
+        {
+            get
+            {
+                return this.t1;
+            }
+            set
+            {
+                t1 = value;
+            }
+        }
 
-		public int T3 {
-			get {
-				return this.t3;
-			}
-			set {
-				t3 = value;
-			}
-		}
+        /// <summary>
+        /// 接收方无数据报文时的确认超时时间--默认15
+        /// </summary>
+        public int T2
+        {
+            get
+            {
+                return this.t2;
+            }
+            set
+            {
+                t2 = value;
+            }
+        }
 
-		public int SizeOfCOT {
-			get {
-				return this.sizeOfCOT;
-			}
-			set {
-				sizeOfCOT = value;
-			}
-		}
+        /// <summary>
+        /// 通道长期空闲时，发送确认镇的超时时间--默认25
+        /// </summary>
+        public int T3
+        {
+            get
+            {
+                return this.t3;
+            }
+            set
+            {
+                t3 = value;
+            }
+        }
 
-		public int OriginatorAddress {
-			get {
-				return this.originatorAddress;
-			}
-			set {
-				originatorAddress = value;
-			}
-		}
+        public int SizeOfCOT
+        {
+            get
+            {
+                return this.sizeOfCOT;
+            }
+            set
+            {
+                sizeOfCOT = value;
+            }
+        }
 
-		public int SizeOfCA {
-			get {
-				return this.sizeOfCA;
-			}
-			set {
-				sizeOfCA = value;
-			}
-		}
+        public int OriginatorAddress
+        {
+            get
+            {
+                return this.originatorAddress;
+            }
+            set
+            {
+                originatorAddress = value;
+            }
+        }
 
-		public int SizeOfIOA {
-			get {
-				return this.sizeOfIOA;
-			}
-			set {
-				sizeOfIOA = value;
-			}
-		}	
+        public int SizeOfCA
+        {
+            get
+            {
+                return this.sizeOfCA;
+            }
+            set
+            {
+                sizeOfCA = value;
+            }
+        }
+
+        public int SizeOfIOA
+        {
+            get
+            {
+                return this.sizeOfIOA;
+            }
+            set
+            {
+                sizeOfIOA = value;
+            }
+        }
 
 
-		public int SizeOfTypeId {
-			get {
-				return this.sizeOfTypeId;
-			}
-		}
+        public int SizeOfTypeId
+        {
+            get
+            {
+                return this.sizeOfTypeId;
+            }
+        }
 
-		public int SizeOfVSQ {
-			get {
-				return this.sizeOfVSQ;
-			}
-		}
-	}
+        public int SizeOfVSQ
+        {
+            get
+            {
+                return this.sizeOfVSQ;
+            }
+        }
+    }
 }
 
