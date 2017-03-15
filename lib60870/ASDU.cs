@@ -50,6 +50,9 @@ namespace lib60870
         /// </summary>
         private ConnectionParameters parameters;
 
+        /// <summary>
+        /// 类型标识
+        /// </summary>
         private TypeID typeId;
         private bool hasTypeId;
 
