@@ -56,8 +56,14 @@ namespace lib60870
         private TypeID typeId;
         private bool hasTypeId;
 
+        /// <summary>
+        /// 可变结构限定词
+        /// </summary>
         private byte vsq; /* variable structure qualifier */
 
+        /// <summary>
+        /// 传送原因
+        /// </summary>
         private CauseOfTransmission cot; /* cause */
         private byte oa; /* originator address */
         private bool isTest; /* is message a test message */
