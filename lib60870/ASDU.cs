@@ -93,12 +93,34 @@ namespace lib60870
         /// </summary>
         private List<InformationObject> informationObjects = null;
 
+        /// <summary>
+        /// 初始化ASDU，使用一大堆参数（默认是单位遥信，无时标）
+        /// </summary>
+        /// <param name="cot">传送原因</param>
+        /// <param name="isTest">是否测试</param>
+        /// <param name="isNegative">肯定/否定回答</param>
+        /// <param name="oa">源发地址</param>
+        /// <param name="ca"> 应用服务数据单元公共地址 </param>
+        /// <param name="isSequence">是否连续单元</param>
+
         public ASDU(CauseOfTransmission cot, bool isTest, bool isNegative, byte oa, int ca, bool isSequence)
             : this(TypeID.M_SP_NA_1, cot, isTest, isNegative, oa, ca, isSequence)
         {
+            //标志没有类型标识？什么意思 
+            //Todo：find out !
             this.hasTypeId = false;
         }
 
+        /// <summary>
+        /// 初始化ASDU，使用一大堆参数
+        /// </summary>
+        /// <param name="typeId">类型标识</param>
+        /// <param name="cot">传送原因</param>
+        /// <param name="isTest">是否测试</param>
+        /// <param name="isNegative">肯定/否定回答</param>
+        /// <param name="oa">源发地址</param>
+        /// <param name="ca"> 应用服务数据单元公共地址 </param>
+        /// <param name="isSequence">是否连续单元</param>
         public ASDU(TypeID typeId, CauseOfTransmission cot, bool isTest, bool isNegative, byte oa, int ca, bool isSequence)
         {
             this.typeId = typeId;
@@ -116,6 +138,10 @@ namespace lib60870
             this.hasTypeId = true;
         }
 
+        /// <summary>
+        /// 添加一个信息体
+        /// </summary>
+        /// <param name="io">信息体对象</param>
         public void AddInformationObject(InformationObject io)
         {
             if (informationObjects == null)
@@ -132,8 +158,10 @@ namespace lib60870
                 hasTypeId = true;
             }
 
+            //增加对象
             informationObjects.Add(io);
 
+            //修改数量
             vsq = (byte)((vsq & 0x80) | informationObjects.Count);
         }
 
@@ -229,7 +257,7 @@ namespace lib60870
 
         }
 
- /// <summary>
+        /// <summary>
         /// 类型标识
         /// </summary>
         public TypeID TypeId
@@ -240,6 +268,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 传送原因
+        /// </summary>
         public CauseOfTransmission Cot
         {
             get
@@ -263,6 +294,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 试验标志
+        /// </summary>
         public bool IsTest
         {
             get
@@ -271,6 +305,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 确认标志
+        /// </summary>
         public bool IsNegative
         {
             get
@@ -285,6 +322,9 @@ namespace lib60870
 
 
 
+        /// <summary>
+        /// 应用服务数据单元公共地址（2个字节）
+        /// </summary>
         public int Ca
         {
             get
@@ -293,6 +333,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 离散或者连续，在可变结构限定词里的的第一位中标识SQ
+        /// </summary>
         public bool IsSquence
         {
             get
@@ -304,6 +347,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 信息对象数目，可变结构限定词的后七位
+        /// </summary>
         public int NumberOfElements
         {
             get
