@@ -46,7 +46,7 @@ namespace lib60870
     public class ASDU
     {
         /// <summary>
-        /// 连接参数-主要104使用的
+        /// 连接参数-主要101/104使用的
         /// </summary>
         private ConnectionParameters parameters;
 

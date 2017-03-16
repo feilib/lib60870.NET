@@ -31,6 +31,9 @@ namespace lib60870
 
     /// <summary>
     /// 类型标识
+    /// 
+    /// 在控制方向标上(CON) 的应用服务数据单元是被确认的应用服务,在监视方向形成镜像,但传送原因不同.
+    /// 这些镜像的应用服务数据单元用来作为肯定/否定认可(验证) 。
     /// </summary>
 	public enum TypeID
     {
@@ -38,104 +41,161 @@ namespace lib60870
         /// 单位遥信  带品质描述，不带时标
         /// </summary>
 		M_SP_NA_1 = 1,
+        /// <summary>
+        /// 单位遥信  带品质描述，带时标
+        /// </summary>
         M_SP_TA_1 = 2,
         /// <summary>
         /// 双位遥信  带品质描述，不带时标
         /// </summary>
 		M_DP_NA_1 = 3,
+        /// <summary>
+        /// 双位遥信  带品质描述，带时标
+        /// </summary>
         M_DP_TA_1 = 4,
+        /// <summary>
+        /// 步位置信息
+        /// </summary>
         M_ST_NA_1 = 5,
+        /// <summary>
+        /// 步位置信息  带时标
+        /// </summary>
         M_ST_TA_1 = 6,
+        /// <summary>
+        /// 32 比特串
+        /// </summary>
         M_BO_NA_1 = 7,
+        /// <summary>
+        /// 32 比特串  带时标
+        /// </summary>
         M_BO_TA_1 = 8,
         /// <summary>
         /// 归一化遥测值  带品质描述，不带时标
         /// </summary>
 		M_ME_NA_1 = 9,
+        /// <summary>
+        /// 归一化遥测值  带品质描述，带时标
+        /// </summary>
         M_ME_TA_1 = 10,
         /// <summary>
         /// 标度化遥测值  带品质描述，不带时标
         /// </summary>
 		M_ME_NB_1 = 11,
+        /// <summary>
+        /// 标度化遥测值  带品质描述，带时标
+        /// </summary>
         M_ME_TB_1 = 12,
         /// <summary>
         /// 短浮点遥测值  带品质描述，不带时标
         /// </summary>
 		M_ME_NC_1 = 13,
+        /// <summary>
+        /// 短浮点遥测值  带品质描述，带时标
+        /// </summary>
         M_ME_TC_1 = 14,
         /// <summary>
         /// 累计量  带品质描述，不带时标
         /// </summary>
 		M_IT_NA_1 = 15,
+        /// <summary>
+        /// 累计量  带品质描述，带时标
+        /// </summary>
         M_IT_TA_1 = 16,
+        /// <summary>
+        /// 带时标的继电保护设备事件
+        /// </summary>
         M_EP_TA_1 = 17,
+        /// <summary>
+        /// 带时标的继电保护设备成组启动事件
+        /// </summary>
         M_EP_TB_1 = 18,
+        /// <summary>
+        /// 带时标的继电保护设备成组输出电路信息
+        /// </summary>
         M_EP_TC_1 = 19,
         /// <summary>
-        /// 成组单位遥信
+        /// 成组单位遥信（带变位检出的成组单点信息）
         /// </summary>
 		M_PS_NA_1 = 20,
         /// <summary>
-        /// 归一化遥测值  带品质描述，不带时标
+        /// 归一化遥测值  不带品质描述，不带时标
         /// </summary>
 		M_ME_ND_1 = 21,
         /// <summary>
-        /// 单位遥信（SOE）  带品质描述，带绝对时标
+        /// 单位遥信（SOE）  带品质描述，带绝对时标CP56Time2a
         /// </summary>
 		M_SP_TB_1 = 30,
         /// <summary>
-        /// 双位遥信（SOE）  带品质描述，带绝对时标
+        /// 双位遥信（SOE）  带品质描述，带绝对时标CP56Time2a
         /// </summary>
 		M_DP_TB_1 = 31,
+        /// <summary>
+        /// 步位置信息  带品质描述，带绝对时标CP56Time2a
+        /// </summary>
         M_ST_TB_1 = 32,
+        /// <summary>
+        /// 32 比特串  带品质描述，带绝对时标CP56Time2a
+        /// </summary>
         M_BO_TB_1 = 33,
         /// <summary>
-        /// 归一化遥测值  带品质描述，带绝对时标
+        /// 归一化遥测值  带品质描述，带绝对时标CP56Time2a
         /// </summary>
 		M_ME_TD_1 = 34,
         /// <summary>
-        /// 标度化遥测值  带品质描述，带绝对时标
+        /// 标度化遥测值  带品质描述，带绝对时标CP56Time2a
         /// </summary>
 		M_ME_TE_1 = 35,
         /// <summary>
-        /// 短浮点遥测值  带品质描述，带绝对时标
+        /// 短浮点遥测值  带品质描述，带绝对时标CP56Time2a
         /// </summary>
 		M_ME_TF_1 = 36,
         /// <summary>
-        /// 累计量  带品质描述，带绝对时标
+        /// 累计量  带品质描述，带绝对时标CP56Time2a
         /// </summary>
 		M_IT_TB_1 = 37,
+        /// <summary>
+        /// 继电保护设备事件  带品质描述，带绝对时标CP56Time2a
+        /// </summary>
         M_EP_TD_1 = 38,
+        /// <summary>
+        /// 继电保护设备成组启动事件  带品质描述，带绝对时标CP56Time2a
+        /// </summary>
         M_EP_TE_1 = 39,
+        /// <summary>
+        /// 继电保护设备成组输出电路信息  带品质描述，带绝对时标CP56Time2a
+        /// </summary>
         M_EP_TF_1 = 40,
         /// <summary>
-        /// 单位遥控命令  每个报文只能包含一个遥控信息体
+        /// (CON)单位遥控命令  每个报文只能包含一个遥控信息体
         /// </summary>
 		C_SC_NA_1 = 45,
         /// <summary>
-        /// 双位遥控命令  每个报文只能包含一个遥控信息体
+        /// (CON)双位遥控命令  每个报文只能包含一个遥控信息体
         /// </summary>
 		C_DC_NA_1 = 46,
         /// <summary>
-        /// 档位调节命令  每个报文只能包含一个档位信息体
+        /// (CON)档位调节命令（步调节命令）  每个报文只能包含一个档位信息体
         /// </summary>
 		C_RC_NA_1 = 47,
         /// <summary>
-        /// 归一化设定值  每个报文只能包含一个设定值
+        /// (CON)归一化设定值  每个报文只能包含一个设定值
         /// </summary>
 		C_SE_NA_1 = 48,
         /// <summary>
-        /// 标度化设定值  每个报文只能包含一个设定值
+        /// (CON)标度化设定值  每个报文只能包含一个设定值
         /// </summary>
 		C_SE_NB_1 = 49,
         /// <summary>
-        /// 短浮点设定值  每个报文只能包含一个设定值
+        /// (CON)短浮点设定值  每个报文只能包含一个设定值
         /// </summary>
 		C_SE_NC_1 = 50,
         /// <summary>
-        /// 归一化设定值  每个报文可以包含多个设定值
+        /// (CON)归一化设定值  每个报文可以包含多个设定值
         /// </summary>
         C_SE_ND_1 = 136,
+        /// <summary>
+        /// (CON)32 比特串
+        /// </summary>
         C_BO_NA_1 = 51,
         C_SC_TA_1 = 58,
         C_DC_TA_1 = 59,
@@ -149,38 +209,77 @@ namespace lib60870
         /// </summary>
 		M_EI_NA_1 = 70,
         /// <summary>
-        /// 站召唤命令  带不同的限定词可以用于组召唤
+        /// (CON)站召唤命令  带不同的限定词可以用于组召唤
         /// </summary>
 		C_IC_NA_1 = 100,
         /// <summary>
-        /// 累计量召唤命令  带不同的限定词可以用于组召唤
+        /// (CON)累计量召唤命令  带不同的限定词可以用于组召唤
         /// </summary>
 		C_CI_NA_1 = 101,
         /// <summary>
-        /// 读命令  读单个信息对象值
+        /// (CON)读命令  读单个信息对象值
         /// </summary>
 		C_RD_NA_1 = 102,
         /// <summary>
-        /// 时钟同步命令  需要通过测量通道延时加以校正
+        /// (CON)时钟同步命令  需要通过测量通道延时加以校正
         /// </summary>
 		C_CS_NA_1 = 103,
+        /// <summary>
+        /// (CON)测试命令
+        /// </summary>
         C_TS_NA_1 = 104,
         /// <summary>
-        /// 复位进程命令  使用前需要与双方确认
+        /// (CON)复位进程命令  使用前需要与双方确认
         /// </summary>
 		C_RP_NA_1 = 105,
+        /// <summary>
+        /// (CON)延时获得命令
+        /// </summary>
         C_CD_NA_1 = 106,
         C_TS_TA_1 = 107,
+        /// <summary>
+        /// (CON)测量值参数, 规一化值
+        /// </summary>
         P_ME_NA_1 = 110,
+        /// <summary>
+        /// (CON)测量值参数, 标度化值
+        /// </summary>
         P_ME_NB_1 = 111,
+        /// <summary>
+        /// (CON)测量值参数, 短浮点数
+        /// </summary>
         P_ME_NC_1 = 112,
+        /// <summary>
+        /// (CON)参数激活
+        /// </summary>
         P_AC_NA_1 = 113,
+        /// <summary>
+        /// 文件淮备就绪
+        /// </summary>
         F_FR_NA_1 = 120,
+        /// <summary>
+        /// 节淮备就绪
+        /// </summary>
         F_SR_NA_1 = 121,
+        /// <summary>
+        /// 召唤目录, 选择文件, 召唤文件，召唤节
+        /// </summary>
         F_SC_NA_1 = 122,
+        /// <summary>
+        /// 最后的节,最后的段
+        /// </summary>
         F_LS_NA_1 = 123,
+        /// <summary>
+        /// 认可文件,认可节
+        /// </summary>
         F_AF_NA_1 = 124,
+        /// <summary>
+        /// 段
+        /// </summary>
         F_SG_NA_1 = 125,
+        /// <summary>
+        /// 目录
+        /// </summary>
         F_DR_TA_1 = 126,
         F_SC_NB_1 = 127
     }
@@ -195,25 +294,49 @@ namespace lib60870
         /// 记账(计费)电能累计量，每个量为四个八位位组
         /// </summary>
         M_IT_TA_2 = 2,
+        /// <summary>
+        /// 记账( 计费)电能累计量，每个量为三个八位位组
+        /// </summary>
         M_IT_TB_2 = 3,
+        /// <summary>
+        /// 记账( 计费)电能累计量，每个量二个八位位组
+        /// </summary>
         M_IT_TC_2 = 4,
         /// <summary>
         /// 周期复位记账(计费)电能累计量，每个量为四个八位位组
         /// </summary>
         M_IT_TD_2 = 5,
+        /// <summary>
+        /// 周期复位记账( 计费)电能累计量。每个量为三个八位位组
+        /// </summary>
         M_IT_TE_2 = 6,
+        /// <summary>
+        /// 周期复位记账( 计费)电能累计量。每个量为二个八位位组
+        /// </summary>
         M_IT_TF_2 = 7,
         /// <summary>
         /// 运行电能累计量，每个量为四个八位位组
         /// </summary>
         M_IT_TG_2 = 8,
+        /// <summary>
+        /// 运行电能累计量，每个量为三个八位位组
+        /// </summary>
         M_IT_TH_2 = 9,
+        /// <summary>
+        /// 运行电能累计量，每个量为二个八位位组
+        /// </summary>
         M_IT_TI_2 = 10,
         /// <summary>
         /// 周期复位运行电能累计最.每个量为四个八位位组
         /// </summary>
         M_IT_TK_2 = 11,
+        /// <summary>
+        /// 周期复位运行电能累计最.每个量为三个八位位组
+        /// </summary>
         M_IT_TL_2 = 12,
+        /// <summary>
+        /// 周期复位运行电能累计最.每个量为二个八位位组
+        /// </summary>
         M_IT_TM_2 = 13,
         /// <summary>
         /// 初始化结束  
