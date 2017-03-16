@@ -33,7 +33,8 @@ namespace lib60870
     /// <summary>
     /// 101协议和104协议中的传送原因
     /// </summary>
-	public enum CauseOfTransmission {
+	public enum CauseOfTransmission
+    {
         /// <summary>
         /// 周期、循环 - 上行
         /// </summary>
@@ -87,10 +88,10 @@ namespace lib60870
         /// <summary>
         /// 文件传输
         /// </summary>
-        FILE_TRANSFER =	13,
-		AUTHENTICATION = 14,
-		MAINTENANCE_OF_AUTH_SESSION_KEY = 15,
-		MAINTENANCE_OF_USER_ROLE_AND_UPDATE_KEY = 16,
+        FILE_TRANSFER = 13,
+        AUTHENTICATION = 14,
+        MAINTENANCE_OF_AUTH_SESSION_KEY = 15,
+        MAINTENANCE_OF_USER_ROLE_AND_UPDATE_KEY = 16,
         /// <summary>
         /// 响应站召唤 - 上行
         /// </summary>
@@ -186,7 +187,7 @@ namespace lib60870
         /// <summary>
         /// 未知的传送原因 - 上行
         /// </summary>
-        UNKNOWN_CAUSE_OF_TRANSMISSION =	45,
+        UNKNOWN_CAUSE_OF_TRANSMISSION = 45,
         /// <summary>
         /// 未知的应用服务数据单元公共地址 - 上行
         /// </summary>
@@ -195,7 +196,7 @@ namespace lib60870
         /// 未知的信息对象地址 - 上行
         /// </summary>
         UNKNOWN_INFORMATION_OBJECT_ADDRESS = 47
-	}
+    }
 
     /// <summary>
     /// 102规约中的传送原因

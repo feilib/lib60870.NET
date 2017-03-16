@@ -57,21 +57,40 @@ namespace lib60870
         private bool hasTypeId;
 
         /// <summary>
-        /// 可变结构限定词
+        /// <para> 可变结构限定词  SQ+number</para>
+        /// <para> SQ 离散或者顺序，0：离散，1连续</para>
+        /// <para> number，信息对象数目</para>
         /// </summary>
         private byte vsq; /* variable structure qualifier */
 
+        #region 传送原因结构--2个字节
         /// <summary>
         /// 传送原因
         /// </summary>
         private CauseOfTransmission cot; /* cause */
+        /// <summary>
+        /// 源发地址
+        /// </summary>
         private byte oa; /* originator address */
+        /// <summary>
+        /// 试验标志
+        /// </summary>
         private bool isTest; /* is message a test message */
+        /// <summary>
+        /// 确认标志
+        /// </summary>
         private bool isNegative; /* is message a negative confirmation */
+        #endregion
 
+        /// <summary>
+        /// 应用服务数据单元公共地址（2个字节）
+        /// </summary>
         private int ca; /* Common address */
 
         private byte[] payload = null;
+        /// <summary>
+        /// 信息体
+        /// </summary>
         private List<InformationObject> informationObjects = null;
 
         public ASDU(CauseOfTransmission cot, bool isTest, bool isNegative, byte oa, int ca, bool isSequence)
@@ -210,6 +229,9 @@ namespace lib60870
 
         }
 
+ /// <summary>
+        /// 类型标识
+        /// </summary>
         public TypeID TypeId
         {
             get
@@ -230,6 +252,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 源发地址
+        /// </summary>
         public byte Oa
         {
             get
