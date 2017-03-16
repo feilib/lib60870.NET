@@ -108,26 +108,33 @@ namespace lib60870
 		M_EP_TE_1 = 39,
 		M_EP_TF_1 = 40,
         /// <summary>
-        /// 单位遥控命令
+        /// 单位遥控命令  每个报文只能包含一个遥控信息体
         /// </summary>
 		C_SC_NA_1 = 45,
         /// <summary>
-        /// 双位遥控命令
+        /// 双位遥控命令  每个报文只能包含一个遥控信息体
         /// </summary>
 		C_DC_NA_1 = 46,
         /// <summary>
-        /// 档位调节命令
+        /// 档位调节命令  每个报文只能包含一个档位信息体
         /// </summary>
 		C_RC_NA_1 = 47,
         /// <summary>
-        /// 归一化设定值
+        /// 归一化设定值  每个报文只能包含一个设定值
         /// </summary>
 		C_SE_NA_1 = 48,
         /// <summary>
-        /// 
+        /// 标度化设定值  每个报文只能包含一个设定值
         /// </summary>
 		C_SE_NB_1 = 49,
+        /// <summary>
+        /// 短浮点设定值  每个报文只能包含一个设定值
+        /// </summary>
 		C_SE_NC_1 = 50,
+        /// <summary>
+        /// 归一化设定值  每个报文可以包含多个设定值
+        /// </summary>
+        C_SE_ND_1 = 136,
 		C_BO_NA_1 = 51,
 		C_SC_TA_1 = 58,
 		C_DC_TA_1 = 59,
@@ -136,12 +143,30 @@ namespace lib60870
 		C_SE_TB_1 = 62,
 		C_SE_TC_1 = 63,
 		C_BO_TA_1 = 64,
+        /// <summary>
+        /// 初始化结束  报告站端初始化完成
+        /// </summary>
 		M_EI_NA_1 = 70,
+        /// <summary>
+        /// 站召唤命令  带不同的限定词可以用于组召唤
+        /// </summary>
 		C_IC_NA_1 = 100,
+        /// <summary>
+        /// 累计量召唤命令  带不同的限定词可以用于组召唤
+        /// </summary>
 		C_CI_NA_1 = 101,
+        /// <summary>
+        /// 读命令  读单个信息对象值
+        /// </summary>
 		C_RD_NA_1 = 102,
+        /// <summary>
+        /// 时钟同步命令  需要通过测量通道延时加以校正
+        /// </summary>
 		C_CS_NA_1 = 103,
 		C_TS_NA_1 = 104,
+        /// <summary>
+        /// 复位进程命令  使用前需要与双方确认
+        /// </summary>
 		C_RP_NA_1 = 105,
 		C_CD_NA_1 = 106,
 		C_TS_TA_1 = 107,
