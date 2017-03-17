@@ -25,63 +25,120 @@ using System;
 
 namespace lib60870
 {
+    /// <summary>
+    /// 信息体对象-这是个抽象类，大家要继承他。。。
+    /// </summary>
 	public abstract class InformationObject
-	{
+    {
+        /// <summary>
+        /// <para>信息体对象地址</para>
+        /// <para>  长度为1-3个字节，在ConnectionParameters中设置</para>
+        /// <para>  连续传输方式下，从第二个信息体开始，地址不再出现，默认为上一个地址+1</para>
+        /// <para>  离散传输，每个信息体都必须有地址</para>
+        /// <para>  没有明确的对象地址时，用0代替</para>
+        /// </summary>
 		private int objectAddress;
 
+        /// <summary>
+        /// 解析信息体对象地址，根据ConnectionParameters中设置的地址长度进行解析
+        /// </summary>
+        /// <param name="parameters">连接参数</param>
+        /// <param name="msg">信息体</param>
+        /// <param name="startIndex">开始字节</param>
+        /// <returns>解析返回信息对象地址</returns>
 		internal static int ParseInformationObjectAddress(ConnectionParameters parameters, byte[] msg, int startIndex)
-		{
-			int ioa = msg [startIndex];
+        {
+            int ioa = msg[startIndex];
 
-			if (parameters.SizeOfIOA > 1)
-				ioa += (msg [startIndex + 1] * 0x100);
+            if (parameters.SizeOfIOA > 1)
+                ioa += (msg[startIndex + 1] * 0x100);
 
-			if (parameters.SizeOfIOA > 2)
-				ioa += (msg [startIndex + 2] * 0x10000);
+            if (parameters.SizeOfIOA > 2)
+                ioa += (msg[startIndex + 2] * 0x10000);
 
-			return ioa;
-		}
+            return ioa;
+        }
 
-		internal InformationObject (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence)
-		{
-			if (!isSequence)
-				objectAddress = ParseInformationObjectAddress (parameters, msg, startIndex);
-		}
+        /// <summary>
+        /// 构造函数，通过信息内容
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="msg"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="isSequence"></param>
+        internal InformationObject(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence)
+        {
+            //非连续状态下，才挨着解析地址。。。
+            //连续状态时，第二个信息体开始就不出现地址了，默认为上一个地址+1
+            if (!isSequence)
+                objectAddress = ParseInformationObjectAddress(parameters, msg, startIndex);
+        }
 
-		public InformationObject(int objectAddress) {
-			this.objectAddress = objectAddress;
-		}
+        /// <summary>
+        /// 使用信息体地址初始化信息体对象
+        /// </summary>
+        /// <param name="objectAddress"></param>
+        public InformationObject(int objectAddress)
+        {
+            this.objectAddress = objectAddress;
+        }
 
-		public int ObjectAddress {
-			get {
-				return this.objectAddress;
-			}
-			internal set {
-				objectAddress = value;
-			}
-		}
-			
-		public abstract bool SupportsSequence {
-			get;
-		}
+        /// <summary>
+        /// <para>信息体对象地址</para>
+        /// <para>  长度为1-3个字节，在ConnectionParameters中设置</para>
+        /// <para>  连续传输方式下，从第二个信息体开始，地址不再出现，默认为上一个地址+1</para>
+        /// <para>  离散传输，每个信息体都必须有地址</para>
+        /// <para>  没有明确的对象地址时，用0代替</para>
+        /// </summary>
+        public int ObjectAddress
+        {
+            get
+            {
+                return this.objectAddress;
+            }
+            internal set
+            {
+                objectAddress = value;
+            }
+        }
 
-		public abstract TypeID Type {
-			get;
-		}
+        /// <summary>
+        /// 是否支持连续？子类中实现
+        /// </summary>
+        public abstract bool SupportsSequence
+        {
+            get;
+        }
 
-		internal virtual void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			if (!isSequence) {
-				frame.SetNextByte ((byte)(objectAddress & 0xff));
+        /// <summary>
+        /// 获取信息体对象的类型，在子类中实现
+        /// </summary>
+        public abstract TypeID Type
+        {
+            get;
+        }
 
-				if (parameters.SizeOfIOA > 1)
-					frame.SetNextByte ((byte)((objectAddress / 0x100) & 0xff));
+        /// <summary>
+        /// 编码？这个什么功能目前还不知道，需要等用到了再过来看--子类中实现
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="parameters"></param>
+        /// <param name="isSequence"></param>
+        internal virtual void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            if (!isSequence)
+            {
+                frame.SetNextByte((byte)(objectAddress & 0xff));
 
-				if (parameters.SizeOfIOA > 2)
-					frame.SetNextByte ((byte)((objectAddress / 0x10000) & 0xff));
-			}
-		}
+                if (parameters.SizeOfIOA > 1)
+                    frame.SetNextByte((byte)((objectAddress / 0x100) & 0xff));
+
+                if (parameters.SizeOfIOA > 2)
+                    frame.SetNextByte((byte)((objectAddress / 0x10000) & 0xff));
+            }
+        }
 
 
-	}
+    }
 }
 

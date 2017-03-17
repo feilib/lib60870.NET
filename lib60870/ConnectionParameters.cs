@@ -66,22 +66,44 @@ namespace lib60870
         /// </summary>
         private int t3 = 25; /* time until test telegrams in case of idle connection */
 
+        /// <summary>
+        /// 类型标识长度，默认1
+        /// </summary>
         private int sizeOfTypeId = 1;
 
+        /// <summary>
+        /// 可变结构限定词的长度，默认1
+        /// </summary>
         private int sizeOfVSQ = 1; /* VSQ = variable sturcture qualifier */
 
+        /// <summary>
+        /// 传送原因的字节数，默认2
+        /// </summary>
         private int sizeOfCOT = 2; /* (parameter b) COT = cause of transmission (1/2) */
 
+        /// <summary>
+        /// 原发地址：用来标明响应来自哪个主站的召唤，一般不用，置零
+        /// </summary>
         private int originatorAddress = 0;
 
+        /// <summary>
+        /// 应用服务数据单元公共地址的字节数（ASDU 的 Address），默认2
+        /// </summary>
         private int sizeOfCA = 2; /* (parameter a) CA = common address of ASDUs (1/2) */
 
+        /// <summary>
+        /// 信息体对象地址的字节数，默认是3
+        /// </summary>
         private int sizeOfIOA = 3; /* (parameter c) IOA = information object address (1/2/3) */
 
         public ConnectionParameters()
         {
         }
 
+        /// <summary>
+        /// 复制一份，深度复制
+        /// </summary>
+        /// <returns></returns>
         public ConnectionParameters clone()
         {
             ConnectionParameters copy = new ConnectionParameters();
@@ -192,6 +214,10 @@ namespace lib60870
             }
         }
 
+
+        /// <summary>
+        /// 传送原因的字节数，默认2
+        /// </summary>
         public int SizeOfCOT
         {
             get
@@ -204,6 +230,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 原发地址：用来标明响应来自哪个主站的召唤，一般不用，置零
+        /// </summary>
         public int OriginatorAddress
         {
             get
@@ -216,6 +245,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 应用服务数据单元公共地址的字节数（ASDU 的 Address），默认2
+        /// </summary>
         public int SizeOfCA
         {
             get
@@ -228,6 +260,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 信息体对象地址的字节数，默认是3
+        /// </summary>
         public int SizeOfIOA
         {
             get
@@ -241,6 +276,9 @@ namespace lib60870
         }
 
 
+        /// <summary>
+        /// 类型标识长度，默认1
+        /// </summary> 
         public int SizeOfTypeId
         {
             get
@@ -249,6 +287,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 可变结构限定词的长度，默认1
+        /// </summary>
         public int SizeOfVSQ
         {
             get
