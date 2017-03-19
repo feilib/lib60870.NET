@@ -128,10 +128,22 @@ namespace lib60870
         /// </summary>
         static byte[] TESTFR_CON_MSG = new byte[] { 0x68, 0x04, 0x83, 0x00, 0x00, 0x00 };
 
+        /// <summary>
+        /// 发送计数器
+        /// </summary>
         private int sendCount;
+        /// <summary>
+        /// 接收计数器
+        /// </summary>
         private int receiveCount;
 
+        /// <summary>
+        /// 未确认的消息数量
+        /// </summary>
         private int unconfirmedMessages; /* number of unconfirmed messages received */
+        /// <summary>
+        /// 上一次确认时间
+        /// </summary>
         private long lastConfirmationTime; /* timestamp when the last confirmation message was sent */
 
         private Socket socket;
@@ -150,9 +162,18 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 对方主机名
+        /// </summary>
         private string hostname;
+        /// <summary>
+        /// 端口号--默认2404
+        /// </summary>
         private int tcpPort;
 
+        /// <summary>
+        ///  是否正在通信
+        /// </summary>
         private bool running = false;
         private bool connecting = false;
         private bool socketError;
@@ -182,6 +203,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 连接超时毫秒数（t0*1000）
+        /// </summary>
         private int connectTimeoutInMs = 1000;
 
         private ConnectionParameters parameters;
@@ -192,6 +216,9 @@ namespace lib60870
         ConnectionHandler connectionHandler = null;
         object connectionHandlerParameter = null;
 
+        /// <summary>
+        /// 发送一个S帧，把当前已收到的信息计数发出去。。。
+        /// </summary>
         private void sendSMessage()
         {
             byte[] msg = new byte[6];
@@ -207,8 +234,13 @@ namespace lib60870
         }
 
 
+        /// <summary>
+        /// 发送I帧
+        /// </summary>
+        /// <param name="frame"></param>
         private void sendIMessage(Frame frame)
         {
+            //更新发送、接收计数器
             frame.PrepareToSend(sendCount, receiveCount);
 
             if (running)
@@ -226,6 +258,12 @@ namespace lib60870
 
         }
 
+        /// <summary>
+        /// 设置连接，主机名/ip，连接参数，端口
+        /// </summary>
+        /// <param name="hostname"></param>
+        /// <param name="parameters"></param>
+        /// <param name="tcpPort"></param>
         private void setup(string hostname, ConnectionParameters parameters, int tcpPort)
         {
             this.hostname = hostname;
@@ -234,32 +272,68 @@ namespace lib60870
             this.connectTimeoutInMs = parameters.T0 * 1000;
         }
 
+        /// <summary>
+        /// 构造函数，使用主机名初始化，端口默认为2404
+        /// </summary>
+        /// <param name="hostname"></param>
         public Connection(string hostname)
         {
             setup(hostname, new ConnectionParameters(), 2404);
         }
 
-
+        /// <summary>
+        /// 使用主机和端口初始化
+        /// </summary>
+        /// <param name="hostname"></param>
+        /// <param name="tcpPort"></param>
         public Connection(string hostname, int tcpPort)
         {
             setup(hostname, new ConnectionParameters(), tcpPort);
         }
 
+        /// <summary>
+        /// 使用主机和连接参数初始化
+        /// </summary>
+        /// <param name="hostname"></param>
+        /// <param name="parameters"></param>
         public Connection(string hostname, ConnectionParameters parameters)
         {
             setup(hostname, parameters.clone(), 2404);
         }
 
+        /// <summary>
+        /// 使用主机名、端口号、和连接参数初始化
+        /// </summary>
+        /// <param name="hostname"></param>
+        /// <param name="tcpPort"></param>
+        /// <param name="parameters"></param>
         public Connection(string hostname, int tcpPort, ConnectionParameters parameters)
         {
             setup(hostname, parameters.clone(), tcpPort);
         }
 
+        /// <summary>
+        /// 设置超时时间
+        /// </summary>
+        /// <param name="millies"></param>
         public void SetConnectTimeout(int millies)
         {
             this.connectTimeoutInMs = millies;
         }
 
+        /// <summary>
+        /// 编码“数据单元标识符”将类型标识、可变结构限定词，传送原因和公共地址编码进去
+        /// <para>注：这里是ASDU的头，应该首先调用</para>
+        /// </summary>
+        /// <param name="frame">需要编码的帧</param>
+        /// <param name="typeId">类型标识</param>
+        /// <param name="vsq">
+        /// <para> 可变结构限定词  SQ+number</para>
+        /// <para> SQ 离散或者顺序，0：离散，1连续</para>
+        /// <para> number，信息对象数目 0~127</para>
+        /// </param>
+        /// <param name="cot">传送原因</param>
+        /// <param name="ca">公共地址</param>
         private void EncodeIdentificationField(Frame frame, TypeID typeId,
                                                int vsq, CauseOfTransmission cot, int ca)
         {
@@ -277,6 +351,12 @@ namespace lib60870
                 frame.SetNextByte((byte)((ca & 0xff00) >> 8));
         }
 
+        /// <summary>
+        /// 将信息对象地址编码进去
+        /// <para>这里是所有信息对象的头，应该在EncodeIdentificationField之后立即调用此函数</para>
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="ioa">信息对象地址</param>
         private void EncodeIOA(Frame frame, int ioa)
         {
             frame.SetNextByte((byte)(ioa & 0xff));
@@ -289,11 +369,36 @@ namespace lib60870
         }
 
         /// <summary>
-        /// Sends the interrogation command.
+        /// 发送站召唤（类型标识100），Sends the interrogation command.
+        /// <para>站召唤和组召唤都行</para>
+        /// <para>站端回答镜像报文确认或否定</para>
         /// </summary>
-        /// <param name="cot">Cause of transmission</param>
-        /// <param name="ca">Common address</param>
-        /// <param name="qoi">Qualifier of interrogation (20 = station interrogation)</param>
+        /// <param name="cot">
+        /// 传送原因Cause of transmission
+        /// <para>控制方向</para>
+        /// <para>  6  激活</para>
+        /// <para>  8  停止激活</para>
+        /// <para>监视方向</para>
+        /// <para>  7  激活确认</para>
+        /// <para>  9  停止激活确认</para>
+        /// <para>  10  激活终止</para>
+        /// <para>  44  未知的类型标识</para>
+        /// <para>  45  未知的传送原因</para>
+        /// <para>  46  未知的应用服务数据单元公共地址 cot</para>
+        /// <para>  47  未知的信息对象地址</para>
+        /// </param>
+        /// <param name="ca">公共地址Common address</param>
+        /// <param name="qoi">
+        /// 召唤限定词（20全站召唤），Qualifier of interrogation (20 = station interrogation)
+        /// <para>0  未用</para>
+        /// <para>1-19  未定义</para>
+        /// <para>20    全站召唤</para>
+        /// <para>21-28    分别为召唤第1-8组信息（遥信信息）</para>
+        /// <para>29-34    分别为召唤第9-14组信息（遥测信息）</para>
+        /// <para>35    召唤第15组信息（档位信息）</para>
+        /// <para>36    召唤第16组信息（远动中断状态信息）</para>
+        /// <para>37-255    未定义</para>
+        /// </param>
         /// <exception cref="ConnectionException">description</exception>
         public void SendInterrogationCommand(CauseOfTransmission cot, int ca, byte qoi)
         {
@@ -313,11 +418,21 @@ namespace lib60870
         }
 
         /// <summary>
-        /// Sends the counter interrogation command (C_CI_NA_1 typeID: 101)
+        /// 发送累计量召唤命令，Sends the counter interrogation command (C_CI_NA_1 typeID: 101)
         /// </summary>
-        /// <param name="cot">Cause of transmission</param>
-        /// <param name="ca">Common address</param>
-        /// <param name="qcc">Qualifier of counter interrogation command</param>
+        /// <param name="cot">传送原因 Cause of transmission</param>
+        /// <param name="ca">公共地址Common address</param>
+        /// <param name="qcc">
+        /// 召唤限定词（应该跟站召一样，下面列出来参考下）Qualifier of counter interrogation command
+        /// <para>0  未用</para>
+        /// <para>1-19  未定义</para>
+        /// <para>20    全站召唤</para>
+        /// <para>21-28    分别为召唤第1-8组信息（遥信信息）</para>
+        /// <para>29-34    分别为召唤第9-14组信息（遥测信息）</para>
+        /// <para>35    召唤第15组信息（档位信息）</para>
+        /// <para>36    召唤第16组信息（远动中断状态信息）</para>
+        /// <para>37-255    未定义</para>
+        /// </param>
         /// <exception cref="ConnectionException">description</exception>
         public void SendCounterInterrogationCommand(CauseOfTransmission cot, int ca, byte qcc)
         {
@@ -337,14 +452,24 @@ namespace lib60870
         }
 
         /// <summary>
-        /// Sends a read command (C_RD_NA_1 typeID: 102).
+        /// 读命令（102）Sends a read command (C_RD_NA_1 typeID: 102).
+        /// <para>召唤单个信息，单个遥测、遥信的当前值读取</para>
         /// </summary>
         /// 
         /// This will send a read command C_RC_NA_1 (102) to the slave/outstation. The COT is always REQUEST (5).
         /// It is used to implement the cyclical polling of data application function.
         /// 
-        /// <param name="ca">Common address</param>
-        /// <param name="ioa">Information object address</param>
+        /// 传送原因：
+        ///     控制方向
+        ///         5： 请求
+        ///     监视方向
+        ///         5： 被请求
+        ///         44  未知的类型标识
+        ///         45  未知的传送原因
+        ///         46  未知的应用服务数据单元公共地址 cot
+        ///         47  未知的信息对象地址
+        /// <param name="ca">公共地址Common address</param>
+        /// <param name="ioa">信息对象地址Information object address</param>
         /// <exception cref="ConnectionException">description</exception>
         public void SendReadCommand(int ca, int ioa)
         {
@@ -361,10 +486,22 @@ namespace lib60870
         }
 
         /// <summary>
-        /// Sends a clock synchronization command (C_CS_NA_1 typeID: 103).
+        /// 发送时钟同步命令（103）Sends a clock synchronization command (C_CS_NA_1 typeID: 103).
+        /// <para>只用于站端没有GPS的情况</para>
+        /// <para>使用104进行同步时，无须测量通道延时</para>
         /// </summary>
-        /// <param name="ca">Common address</param>
-        /// <param name="time">the new time to set</param>
+        /// 传送原因：
+        ///     控制方向
+        ///         6： 激活
+        ///     监视方向
+        ///         7： 激活确认
+        ///         10  激活终止
+        ///         44  未知的类型标识
+        ///         45  未知的传送原因
+        ///         46  未知的应用服务数据单元公共地址 cot
+        ///         47  未知的信息对象地址
+        /// <param name="ca">公共地址Common address</param>
+        /// <param name="time">时间日期the new time to set</param>
         /// <exception cref="ConnectionException">description</exception>
         public void SendClockSyncCommand(int ca, CP56Time2a time)
         {
@@ -408,11 +545,29 @@ namespace lib60870
         }
 
         /// <summary>
-        /// Sends a reset process command (C_RP_NA_1 typeID: 105).
+        /// 复位进程命令Sends a reset process command (C_RP_NA_1 typeID: 105).
+        /// <para>1. 必须慎重使用复位进程命令</para>
+        /// <para>2. 需要通信双方技术人员交流并去人复位条件方可进行</para>
         /// </summary>
-        /// <param name="cot">Cause of transmission</param>
-        /// <param name="ca">Common address</param>
-        /// <param name="qrp">Qualifier of reset process command</param>
+        /// <param name="cot">
+        /// 传送原因Cause of transmission
+        /// <para>控制方向</para>
+        /// <para>  6  激活</para>
+        /// <para>监视方向</para>
+        /// <para>  7  激活确认</para>
+        /// <para>  10  激活终止</para>
+        /// <para>  44  未知的类型标识</para>
+        /// <para>  45  未知的传送原因</para>
+        /// <para>  46  未知的应用服务数据单元公共地址 cot</para>
+        /// <para>  47  未知的信息对象地址</para>
+        /// </param>
+        /// <param name="ca">公共地址Common address</param>
+        /// <param name="qrp">
+        /// 复位进程命令限定词Qualifier of reset process command
+        /// <para>0：  未用</para>
+        /// <para>1：  进程的总复位</para>
+        /// <para>2：  复位时间缓冲区等待处理的带时标信息</para>
+        /// </param>
         /// <exception cref="ConnectionException">description</exception>
         public void SendResetProcessCommand(CauseOfTransmission cot, int ca, byte qrp)
         {
@@ -455,25 +610,25 @@ namespace lib60870
         }
 
         /// <summary>
-        /// Sends the control command.
+        /// 发送控制命令Sends the control command.
         /// </summary>
         /// 
         /// The type ID has to match the type of the InformationObject!
         /// 
-        /// C_SC_NA_1 -> SingleCommand
-        /// C_DC_NA_1 -> DoubleCommand
-        /// C_RC_NA_1 -> StepCommand
-        /// C_SC_TA_1 -> SingleCommandWithCP56Time2a
-        /// C_SE_NA_1 -> SetpointCommandNormalized
-        /// C_SE_NB_1 -> SetpointCommandScaled
-        /// C_SE_NC_1 -> SetpointCommandShort
+        /// C_SC_NA_1 -> SingleCommand                  单位遥控命令
+        /// C_DC_NA_1 -> DoubleCommand                  双位遥控命令
+        /// C_RC_NA_1 -> StepCommand                    档位调节命令
+        /// C_SC_TA_1 -> SingleCommandWithCP56Time2a    
+        /// C_SE_NA_1 -> SetpointCommandNormalized      归一化设定值
+        /// C_SE_NB_1 -> SetpointCommandScaled          标度化设定值
+        /// C_SE_NC_1 -> SetpointCommandShort           短浮点设定值
         /// C_BO_NA_1 -> Bitstring32Command
         /// 
         /// 
-        /// <param name="typeId">Type ID of the control command</param>
-        /// <param name="cot">Cause of transmission (use ACTIVATION to start a control sequence)</param>
-        /// <param name="ca">Common address</param>
-        /// <param name="sc">Information object of the command</param>
+        /// <param name="typeId">类型标识Type ID of the control command</param>
+        /// <param name="cot">传送原因Cause of transmission (use ACTIVATION to start a control sequence)</param>
+        /// <param name="ca">公共地址Common address</param>
+        /// <param name="sc">信息体对象Information object of the command</param>
         /// <exception cref="ConnectionException">description</exception>
         public void SendControlCommand(TypeID typeId, CauseOfTransmission cot, int ca, InformationObject sc)
         {
@@ -526,7 +681,9 @@ namespace lib60870
         }
 
         /// <summary>
-        /// Connect this instance.
+        /// 连接Connect this instance.
+        /// <para>如果连接被拒或者超时，会抛异常，注意接着点。。。</para>
+        /// <para>如果正在连接，或者已经连接上，也会抛异常，注意接着点。。。</para>
         /// </summary>
         /// 
         /// The function will throw a SocketException if the connection attempt is rejected or timed out.
@@ -569,12 +726,19 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 接收数据
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="buffer">待接收数据缓冲，定义长点把。255以上</param>
+        /// <returns>返回已接收长度</returns>
         private int receiveMessage(Socket socket, byte[] buffer)
         {
             // wait for first byte
             if (socket.Receive(buffer, 0, 1, SocketFlags.None) != 1)
                 return 0;
 
+            //判断是不是68开头
             if (buffer[0] != 0x68)
             {
                 if (debugOutput)
@@ -589,7 +753,7 @@ namespace lib60870
 
             int length = buffer[1];
 
-            // read remaining frame
+            // read remaining frame 这里他直接读接下来所有的字节，如果传送把一个报文分开了。这里就sb了。。标个TODO吧。。。
             if (socket.Receive(buffer, 2, length, SocketFlags.None) != length)
             {
                 if (debugOutput)
@@ -601,6 +765,11 @@ namespace lib60870
             return length + 2;
         }
 
+        /// <summary>
+        /// 检查t2超时（接收方无数据报文的确认超时时间）
+        /// </summary>
+        /// <param name="currentTime">当前时间</param>
+        /// <returns>返回是否超时</returns>
         private bool checkConfirmTimeout(long currentTime)
         {
             if ((currentTime - lastConfirmationTime) >= (parameters.T2 * 1000))
@@ -609,8 +778,17 @@ namespace lib60870
                 return false;
         }
 
+        /// <summary>
+        /// 信息检查，按说每收到一条信息都要来这里检查。。。
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <param name="buffer"></param>
+        /// <param name="msgSize"></param>
+        /// <returns></returns>
         private bool checkMessage(Socket socket, byte[] buffer, int msgSize)
         {
+            //这里检测I帧和U帧，不知道为什么不检测S帧，难道是S帧已经处理过了？
+            //update：似乎他这里只需要发送S帧，不主动监测S帧。。。
             if ((buffer[2] & 1) == 0)
             { /* I format frame */
 
@@ -633,15 +811,17 @@ namespace lib60870
 
                 if ((unconfirmedMessages > parameters.W) || checkConfirmTimeout(currentTime))
                 {
-
+                    //未确认消息超过W，或者t2超时，则发送S帧
                     lastConfirmationTime = currentTime;
 
                     unconfirmedMessages = 0;
                     sendSMessage();
                 }
 
+                //新建一个ASDU，准备解析
                 ASDU asdu = new ASDU(parameters, buffer, msgSize);
 
+                //解析ASDU
                 if (asduReceivedHandler != null)
                     asduReceivedHandler(asduReceivedHandlerParameter, asdu);
             }
@@ -650,24 +830,24 @@ namespace lib60870
 
                 if (buffer[2] == 0x43)
                 { // Check for TESTFR_ACT message
-
+                    //收到了测试命令，回复测试确认
                     socket.Send(TESTFR_CON_MSG);
                 }
                 else if (buffer[2] == 0x07)
                 { /* STARTDT ACT */
-
+                    //收到了开启命令，回复开启命令确认
                     socket.Send(STARTDT_CON_MSG);
                 }
                 else if (buffer[2] == 0x0b)
                 { /* STARTDT_CON */
-
+                    //收到了开启确认，处理[已连接]事件
                     if (connectionHandler != null)
                         connectionHandler(connectionHandlerParameter, ConnectionEvent.STARTDT_CON_RECEIVED);
 
                 }
                 else if (buffer[2] == 0x23)
                 { /* STOPDT_CON */
-
+                    //收到了停止确认，处理[已断开]事件
                     if (connectionHandler != null)
                         connectionHandler(connectionHandlerParameter, ConnectionEvent.STOPDT_CON_RECEIVED);
                 }
@@ -723,6 +903,7 @@ namespace lib60870
                             Console.WriteLine("Socket connected to {0}",
                                 socket.RemoteEndPoint.ToString());
 
+                        //自动启动的话，直接发送开启命令了。。
                         if (autostart)
                             socket.Send(STARTDT_ACT_MSG);
 
@@ -824,6 +1005,9 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 关闭连接（带阻塞）
+        /// </summary>
         public void Close()
         {
             if (running)
@@ -835,6 +1019,11 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 设置ASDU解析代理和参数
+        /// </summary>
+        /// <param name="handler">解析代理</param>
+        /// <param name="parameter">解析参数</param>
         public void SetASDUReceivedHandler(ASDUReceivedHandler handler, object parameter)
         {
             asduReceivedHandler = handler;
@@ -844,9 +1033,10 @@ namespace lib60870
         /// <summary>
         /// Sets the connection handler. The connection handler is called when
         /// the connection is established or closed
+        /// <para>设置连接处理句柄，当连接断开或者已连接时，会调用此处理句柄</para>
         /// </summary>
-        /// <param name="handler">the handler to be called</param>
-        /// <param name="parameter">user provided parameter that is passed to the handler</param>
+        /// <param name="handler">被调用的句柄the handler to be called</param>
+        /// <param name="parameter">调用参数user provided parameter that is passed to the handler，主要是已断开/已连接两个参数，参见【ConnectionEvent】</param>
         public void SetConnectionHandler(ConnectionHandler handler, object parameter)
         {
             connectionHandler = handler;

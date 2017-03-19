@@ -28,53 +28,91 @@ using System.Threading;
 
 namespace lib60870
 {
+    /// <summary>
+    /// <para>104帧内容，这里主要是报头，叫ACPI，剩下的内容靠一点一点append进去的。。</para>
+    /// <para>ACPI的六个字节是这边确定，主要包括起始字符，长度，还有4个控制域</para>
+    /// <para>I帧的4个控制域分别是发送序号和接受序号，</para>
+    /// <para>S帧只有接收序号，发送序号是0</para>
+    /// <para>U帧是固定的，不在这里发送。。。</para>
+    /// </summary>
+    public class T104Frame : Frame
+    {
+        byte[] buffer;
 
-	public class T104Frame : Frame
-	{
-		byte[] buffer;
+        int msgSize;
 
-		int msgSize;
-	
-		public T104Frame () {
-			buffer = new byte[256];
+        public T104Frame()
+        {
+            buffer = new byte[256];
 
-			buffer [0] = 0x68;
+            buffer[0] = 0x68;
 
-			msgSize = 6;
-		}
+            msgSize = 6;
+        }
 
-		public override void PrepareToSend(int sendCounter, int receiveCounter) {
-			/* set size field */
-			buffer [1] = (byte)(msgSize - 2);
+        /// <summary>
+        /// 发送前调用，更新报文长度，发送计数器和接收计数器。。。
+        /// </summary>
+        /// <param name="sendCounter">发送计数器</param>
+        /// <param name="receiveCounter">接收计数器</param>
+        public override void PrepareToSend(int sendCounter, int receiveCounter)
+        {
+            /* set size field */
+            buffer[1] = (byte)(msgSize - 2);
 
-			buffer [2] = (byte) ((sendCounter % 128) * 2);
-			buffer [3] = (byte) (sendCounter / 128);
+            buffer[2] = (byte)((sendCounter % 128) * 2);
+            buffer[3] = (byte)(sendCounter / 128);
 
-			buffer [4] = (byte) ((receiveCounter % 128) * 2);
-			buffer [5] = (byte) (receiveCounter / 128);
-		}
+            buffer[4] = (byte)((receiveCounter % 128) * 2);
+            buffer[5] = (byte)(receiveCounter / 128);
+        }
 
-		public override void ResetFrame() {
-			msgSize = 6;
-		}
+        /// <summary>
+        /// 复位帧
+        /// </summary>
+        public override void ResetFrame()
+        {
+            msgSize = 6;
+        }
 
-		public override void SetNextByte(byte value) {
-			buffer [msgSize++] = value;
-		}
+        /// <summary>
+        /// 增加一个需要发送的字节
+        /// </summary>
+        /// <param name="value"></param>
+        public override void SetNextByte(byte value)
+        {
+            buffer[msgSize++] = value;
+        }
 
-		public override void AppendBytes (byte[] bytes) {
-			for (int i = 0; i < bytes.Length; i++) {
-				buffer [msgSize++] = bytes [i];
-			}
-		}
+        /// <summary>
+        /// 增加一组需要发送的字节
+        /// </summary>
+        /// <param name="bytes"></param>
+        public override void AppendBytes(byte[] bytes)
+        {
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                buffer[msgSize++] = bytes[i];
+            }
+        }
 
-		public override int GetMsgSize() {
-			return msgSize;
-		}
+        /// <summary>
+        /// 获取需要发送的字节数
+        /// </summary>
+        /// <returns></returns>
+        public override int GetMsgSize()
+        {
+            return msgSize;
+        }
 
-		public override byte[] GetBuffer() {
-			return buffer;
-		}
-	}
-	
+        /// <summary>
+        /// 获取需要发送的buffer
+        /// </summary>
+        /// <returns></returns>
+        public override byte[] GetBuffer()
+        {
+            return buffer;
+        }
+    }
+
 }

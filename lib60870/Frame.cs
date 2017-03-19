@@ -29,20 +29,43 @@ using System.Threading;
 
 namespace lib60870
 {
-	public abstract class Frame
-	{
+    public abstract class Frame
+    {
+        /// <summary>
+        /// 发送前调用这个，用于更新当前发送的计数器和接收计数器之类随变化内容。。。
+        /// </summary>
+        /// <param name="sendCounter"></param>
+        /// <param name="receiveCounter"></param>
+		public abstract void PrepareToSend(int sendCounter, int receiveCounter);
 
-		public abstract void PrepareToSend (int sendCounter, int receiveCounter);
+        /// <summary>
+        /// 复位帧
+        /// </summary>
+		public abstract void ResetFrame();
 
-		public abstract void ResetFrame ();
+        /// <summary>
+        /// 增加一个需要发送的字节
+        /// </summary>
+        /// <param name="value"></param>
+        public abstract void SetNextByte(byte value);
 
-		public abstract void SetNextByte (byte value);
+        /// <summary>
+        /// 增加一组需要发送的字节
+        /// </summary>
+        /// <param name="bytes"></param>
+        public abstract void AppendBytes(byte[] bytes);
 
-		public abstract void AppendBytes (byte[] bytes);
+        /// <summary>
+        /// 获取总共字节数
+        /// </summary>
+        /// <returns></returns>
+		public abstract int GetMsgSize();
 
-		public abstract int GetMsgSize ();
+        /// <summary>
+        /// 获取需要发送的缓冲区
+        /// </summary>
+        /// <returns></returns>
+		public abstract byte[] GetBuffer();
 
-		public abstract byte[] GetBuffer ();
-
-	}
+    }
 }
