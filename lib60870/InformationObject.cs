@@ -119,13 +119,14 @@ namespace lib60870
         }
 
         /// <summary>
-        /// 编码？这个什么功能目前还不知道，需要等用到了再过来看--子类中实现
+        /// 将本信息编码进入frame，注为确保地址能顺利编码进入，请子类优先调用基类
         /// </summary>
         /// <param name="frame"></param>
         /// <param name="parameters"></param>
         /// <param name="isSequence"></param>
         internal virtual void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
         {
+            //如果非连续编码，则每次编码前先编码地址
             if (!isSequence)
             {
                 frame.SetNextByte((byte)(objectAddress & 0xff));
