@@ -23,116 +23,160 @@ using System;
 
 namespace lib60870
 {
+    /// <summary>
+    /// 品质描述词QDS
+    /// </summary>
 	public class QualityDescriptor
-	{
-		private byte encodedValue;
-	
-		public QualityDescriptor()
-		{
-			this.encodedValue = 0;
-		}
+    {
+        private byte encodedValue;
 
-		public QualityDescriptor (byte encodedValue)
-		{
-			this.encodedValue = encodedValue;
-		}
+        /// <summary>
+        /// 构造函数，创建一个默认的描述词，全部位都置零
+        /// </summary>
+        public QualityDescriptor()
+        {
+            this.encodedValue = 0;
+        }
 
-		public bool Overflow {
-			get {
-				if ((encodedValue & 0x01) != 0)
-					return true;
-				else
-					return false;
-			}
+        /// <summary>
+        /// 构造函数，解析现有的内容
+        /// </summary>
+        /// <param name="encodedValue"></param>
+        public QualityDescriptor(byte encodedValue)
+        {
+            this.encodedValue = encodedValue;
+        }
 
-			set {
-				if (value) 
-					encodedValue |= 0x01;
-				else
-					encodedValue &= 0xfe;
-			}
-		}
+        /// <summary>
+        /// 溢出标志，表示遥测值是否发成溢出，bit1
+        /// </summary>
+		public bool Overflow
+        {
+            get
+            {
+                if ((encodedValue & 0x01) != 0)
+                    return true;
+                else
+                    return false;
+            }
 
-		public bool Blocked {
-			get {
-				if ((encodedValue & 0x10) != 0)
-					return true;
-				else
-					return false;
-			}
+            set
+            {
+                if (value)
+                    encodedValue |= 0x01;
+                else
+                    encodedValue &= 0xfe;
+            }
+        }
 
-			set {
-				if (value) 
-					encodedValue |= 0x10;
-				else
-					encodedValue &= 0xef;
-			}
-		}
+        /// <summary>
+        /// 封锁标志，，表示遥测是否被当地封锁，bit5
+        /// </summary>
+        public bool Blocked
+        {
+            get
+            {
+                if ((encodedValue & 0x10) != 0)
+                    return true;
+                else
+                    return false;
+            }
 
-		public bool Substituted {
-			get {
-				if ((encodedValue & 0x20) != 0)
-					return true;
-				else
-					return false;
-			}
+            set
+            {
+                if (value)
+                    encodedValue |= 0x10;
+                else
+                    encodedValue &= 0xef;
+            }
+        }
 
-			set {
-				if (value) 
-					encodedValue |= 0x20;
-				else
-					encodedValue &= 0xdf;
-			}
-		}
+        /// <summary>
+        /// 取代标志，表示该遥测是否被人工设置活被其他装置取代，bit6
+        /// </summary>
+        public bool Substituted
+        {
+            get
+            {
+                if ((encodedValue & 0x20) != 0)
+                    return true;
+                else
+                    return false;
+            }
 
+            set
+            {
+                if (value)
+                    encodedValue |= 0x20;
+                else
+                    encodedValue &= 0xdf;
+            }
+        }
 
-		public bool NonTopical {
-			get {
-				if ((encodedValue & 0x40) != 0)
-					return true;
-				else
-					return false;
-			}
+        /// <summary>
+        /// 刷新标志，false代表为当前值，true代表本次采样刷新失败，没采样成功，bit7
+        /// </summary>
+        public bool NonTopical
+        {
+            get
+            {
+                if ((encodedValue & 0x40) != 0)
+                    return true;
+                else
+                    return false;
+            }
 
-			set {
-				if (value) 
-					encodedValue |= 0x40;
-				else
-					encodedValue &= 0xbf;
-			}
-		}
+            set
+            {
+                if (value)
+                    encodedValue |= 0x40;
+                else
+                    encodedValue &= 0xbf;
+            }
+        }
 
+        /// <summary>
+        /// 有效值，false（0）代表有效，true（1）代表无效，bit8
+        /// </summary>
+        public bool Invalid
+        {
+            get
+            {
+                if ((encodedValue & 0x80) != 0)
+                    return true;
+                else
+                    return false;
+            }
 
-		public bool Invalid {
-			get {
-				if ((encodedValue & 0x80) != 0)
-					return true;
-				else
-					return false;
-			}
+            set
+            {
+                if (value)
+                    encodedValue |= 0x80;
+                else
+                    encodedValue &= 0x7f;
+            }
+        }
 
-			set {
-				if (value) 
-					encodedValue |= 0x80;
-				else
-					encodedValue &= 0x7f;
-			}
-		}
+        /// <summary>
+        /// 获取，或者设置当前品质描述词
+        /// </summary>
+        public byte EncodedValue
+        {
+            get
+            {
+                return this.encodedValue;
+            }
+            set
+            {
+                encodedValue = value;
+            }
+        }
 
-		public byte EncodedValue {
-			get {
-				return this.encodedValue;
-			}
-			set {
-				encodedValue = value;
-			}
-		}
+        public override string ToString()
+        {
+            return string.Format("[QualityDescriptor: Overflow={0}, Blocked={1}, Substituted={2}, NonTopical={3}, Invalid={4}]", Overflow, Blocked, Substituted, NonTopical, Invalid);
+        }
+    }
 
-		public override string ToString ()
-		{
-			return string.Format ("[QualityDescriptor: Overflow={0}, Blocked={1}, Substituted={2}, NonTopical={3}, Invalid={4}]", Overflow, Blocked, Substituted, NonTopical, Invalid);
-		}
-	}
-		
 }
 
