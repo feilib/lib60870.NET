@@ -31,7 +31,7 @@ using System.Threading;
 namespace lib60870
 {
     /// <summary>
-    /// 101协议和104协议中的传送原因
+    /// 101协议和104协议中的传送原因，测试标志和确认标志均留空
     /// </summary>
 	public enum CauseOfTransmission
     {
