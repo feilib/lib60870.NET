@@ -325,8 +325,12 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 新时间
+        /// </summary>
         private CP56Time2a newTime;
 
+        //新时间
         public CP56Time2a NewTime
         {
             get
