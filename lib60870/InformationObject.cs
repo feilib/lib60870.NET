@@ -60,7 +60,7 @@ namespace lib60870
         }
 
         /// <summary>
-        /// 构造函数，通过信息内容
+        /// 构造函数，通过信息内容（主要解析信息体地址）
         /// </summary>
         /// <param name="parameters"></param>
         /// <param name="msg"></param>
