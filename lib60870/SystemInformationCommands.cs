@@ -330,7 +330,9 @@ namespace lib60870
         /// </summary>
         private CP56Time2a newTime;
 
-        //新时间
+        /// <summary>
+        /// 新时间
+        /// </summary>
         public CP56Time2a NewTime
         {
             get
