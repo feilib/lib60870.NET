@@ -73,11 +73,11 @@ namespace lib60870
         /// </summary>
         private byte oa; /* originator address */
         /// <summary>
-        /// 试验标志
+        /// 试验标志（传送原因bit8）
         /// </summary>
         private bool isTest; /* is message a test message */
         /// <summary>
-        /// 确认标志
+        /// 确认标志（传送原因bit7）
         /// </summary>
         private bool isNegative; /* is message a negative confirmation */
         #endregion
@@ -87,7 +87,11 @@ namespace lib60870
         /// </summary>
         private int ca; /* Common address */
 
+        /// <summary>
+        /// 其余信息
+        /// </summary>
         private byte[] payload = null;
+
         /// <summary>
         /// 信息体
         /// </summary>
@@ -165,6 +169,12 @@ namespace lib60870
             vsq = (byte)((vsq & 0x80) | informationObjects.Count);
         }
 
+        /// <summary>
+        /// 使用buff初始化一个ASDU，相当于解析
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="msg"></param>
+        /// <param name="msgLength"></param>
         public ASDU(ConnectionParameters parameters, byte[] msg, int msgLength)
         {
             this.parameters = parameters;
@@ -206,29 +216,43 @@ namespace lib60870
             Buffer.BlockCopy(msg, bufPos, payload, 0, payloadSize);
         }
 
+        /// <summary>
+        /// 将ASDU内容编码入frame中。。
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="parameters"></param>
         public void Encode(Frame frame, ConnectionParameters parameters)
         {
+            //先编码类型标识
             frame.SetNextByte((byte)typeId);
+            //然后就是可变结构限定词
             frame.SetNextByte(vsq);
 
+            #region 传送原因
             byte cotByte = (byte)cot;
 
+            //测试标志
             if (isTest)
                 cotByte = (byte)(cotByte | 0x80);
-
+            //确认标志
             if (isNegative)
                 cotByte = (byte)(cotByte | 0x40);
 
             frame.SetNextByte(cotByte);
 
+            //如果2字节传送原因的话，多编码一个“源发地址”进去
             if (parameters.SizeOfCOT == 2)
                 frame.SetNextByte((byte)oa);
+            #endregion
 
+            #region ASDU公共地址
             frame.SetNextByte((byte)(ca % 256));
 
             if (parameters.SizeOfCA > 1)
                 frame.SetNextByte((byte)(ca / 256));
+            #endregion
 
+            //接下来编码内容
             if (payload != null)
                 frame.AppendBytes(payload);
             else
@@ -241,11 +265,13 @@ namespace lib60870
 
                     if (isFirst)
                     {
+                        //第一条，必须编码地址进去
                         io.Encode(frame, parameters, false);
                         isFirst = false;
                     }
                     else
                     {
+                        //后面的，根据是否为连续，决定是否编码地址
                         if (IsSquence)
                             io.Encode(frame, parameters, true);
                         else
@@ -358,6 +384,11 @@ namespace lib60870
             }
         }
 
+        /// <summary>
+        /// 获取第n个信息对象
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public InformationObject GetElement(int index)
         {
             InformationObject retVal = null;
