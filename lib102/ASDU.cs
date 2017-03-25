@@ -411,6 +411,7 @@ namespace lib102
 
             switch (typeId)
             {
+                #region 根据不同的类型标识，做不同的解析
                 case TypeID.M_SP_TA_2: /* 1 */
 
                     elementSize = 1;
@@ -589,8 +590,8 @@ namespace lib102
                     elementSize = 4;
 
                     break;
-             
 
+                #endregion
 
                 default:
                     throw new ASDUParsingException("Unknown ASDU type id:" + typeId);
