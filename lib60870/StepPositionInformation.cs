@@ -23,210 +23,239 @@ using System;
 
 namespace lib60870
 {
-	public class StepPositionInformation : InformationObject
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_ST_NA_1;
-			}
-		}
+    public class StepPositionInformation : InformationObject
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_ST_NA_1;
+            }
+        }
 
-		override public bool SupportsSequence {
-			get {
-				return true;
-			}
-		}
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-		private int value;
+        private int value;
 
-		/// <summary>
-		/// Step position (range -64 ... +63)
-		/// </summary>
-		/// <value>The value.</value>
-		public int Value {
-			get {
-				return this.value;
-			}
-			set {
-				if (value > 63)
-					this.value = 63;
-				else if (value < -64)
-					this.value = -64;
-				else
-					this.value = value;
-			}
-		}
+        /// <summary>
+        /// Step position (range -64 ... +63)
+        /// </summary>
+        /// <value>The value.</value>
+        public int Value
+        {
+            get
+            {
+                return this.value;
+            }
+            set
+            {
+                if (value > 63)
+                    this.value = 63;
+                else if (value < -64)
+                    this.value = -64;
+                else
+                    this.value = value;
+            }
+        }
 
-		private bool isTransient;
+        private bool isTransient;
 
-		/// <summary>
-		/// Gets a value indicating whether this <see cref="lib60870.StepPositionInformation"/> is in transient state.
-		/// </summary>
-		/// <value><c>true</c> if transient; otherwise, <c>false</c>.</value>
-		public bool Transient {
-			get {
-				return this.isTransient;
-			}
-			set {
-				this.isTransient = value;
-			}
-		}
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="lib60870.StepPositionInformation"/> is in transient state.
+        /// </summary>
+        /// <value><c>true</c> if transient; otherwise, <c>false</c>.</value>
+        public bool Transient
+        {
+            get
+            {
+                return this.isTransient;
+            }
+            set
+            {
+                this.isTransient = value;
+            }
+        }
 
-		private QualityDescriptor quality;
+        private QualityDescriptor quality;
 
-		public QualityDescriptor Quality {
-			get {
-				return this.quality;
-			}
-		}
+        public QualityDescriptor Quality
+        {
+            get
+            {
+                return this.quality;
+            }
+        }
 
-		public StepPositionInformation(int ioa, int value, bool isTransient) :
-			base(ioa)
-		{
-			Value = value;
-			Transient = isTransient;
-		}
+        public StepPositionInformation(int ioa, int value, bool isTransient) :
+            base(ioa)
+        {
+            Value = value;
+            Transient = isTransient;
+        }
 
-		internal StepPositionInformation (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-			base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        internal StepPositionInformation(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+            base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			/* parse VTI (value with transient state indication) */
-			byte vti = msg [startIndex++];
+            /* parse VTI (value with transient state indication) */
+            byte vti = msg[startIndex++];
 
-			isTransient = ((vti & 0x80) == 0x80);
+            isTransient = ((vti & 0x80) == 0x80);
 
-			value = (vti & 0x7f);
+            value = (vti & 0x7f);
 
-			if (value > 63)
-				value = value - 128;
+            if (value > 63)
+                value = value - 128;
 
-			quality = new QualityDescriptor (msg[startIndex++]);
-		}
+            quality = new QualityDescriptor(msg[startIndex++]);
+        }
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-			byte vti;
+            byte vti;
 
-			if (value < 0)
-				vti = (byte)(value + 128);
-			else
-				vti = (byte)value;
+            if (value < 0)
+                vti = (byte)(value + 128);
+            else
+                vti = (byte)value;
 
-			if (isTransient)
-				vti += 0x80;
+            if (isTransient)
+                vti += 0x80;
 
-			frame.SetNextByte (vti);
-				
-			frame.SetNextByte (quality.EncodedValue);
-		}
+            frame.SetNextByte(vti);
 
-	}
+            frame.SetNextByte(quality.EncodedValue);
+        }
 
-	public class StepPositionWithCP24Time2a : StepPositionInformation
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_ST_TA_1;
-			}
-		}
+    }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+    public class StepPositionWithCP24Time2a : StepPositionInformation
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_ST_TA_1;
+            }
+        }
 
-		private CP24Time2a timestamp;
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public CP24Time2a Timestamp {
-			get {
-				return this.timestamp;
-			}
-			set {
-				this.timestamp = value;
-			}
-		}
-			
-		public StepPositionWithCP24Time2a(int ioa, int value, bool isTransient, CP24Time2a timestamp) :
-			base(ioa, value, isTransient)
-		{
-			Timestamp = timestamp;
-		}
+        private CP24Time2a timestamp;
 
-		internal StepPositionWithCP24Time2a (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-		base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        public CP24Time2a Timestamp
+        {
+            get
+            {
+                return this.timestamp;
+            }
+            set
+            {
+                this.timestamp = value;
+            }
+        }
 
-			startIndex += 2; /* VTI + quality*/
+        public StepPositionWithCP24Time2a(int ioa, int value, bool isTransient, CP24Time2a timestamp) :
+            base(ioa, value, isTransient)
+        {
+            Timestamp = timestamp;
+        }
 
-			/* parse CP24Time2a (time stamp) */
-			timestamp = new CP24Time2a (msg, startIndex);
-		}
+        internal StepPositionWithCP24Time2a(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+        base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            startIndex += 2; /* VTI + quality*/
 
-			frame.AppendBytes (timestamp.GetEncodedValue ());
-		}
+            /* parse CP24Time2a (time stamp) */
+            timestamp = new CP24Time2a(msg, startIndex);
+        }
 
-	}
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-	public class StepPositionWithCP56Time2a : StepPositionInformation
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_ST_TB_1;
-			}
-		}
+            frame.AppendBytes(timestamp.GetEncodedValue());
+        }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+    }
 
-		private CP56Time2a timestamp;
+    public class StepPositionWithCP56Time2a : StepPositionInformation
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_ST_TB_1;
+            }
+        }
 
-		public CP56Time2a Timestamp {
-			get {
-				return this.timestamp;
-			}
-			set {
-				this.timestamp = value;
-			}
-		}
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public StepPositionWithCP56Time2a(int ioa, int value, bool isTransient, CP56Time2a timestamp) :
-			base(ioa, value, isTransient)
-		{
-			Timestamp = timestamp;
-		}
+        private CP56Time2a timestamp;
+
+        public CP56Time2a Timestamp
+        {
+            get
+            {
+                return this.timestamp;
+            }
+            set
+            {
+                this.timestamp = value;
+            }
+        }
+
+        public StepPositionWithCP56Time2a(int ioa, int value, bool isTransient, CP56Time2a timestamp) :
+            base(ioa, value, isTransient)
+        {
+            Timestamp = timestamp;
+        }
 
 
-		internal StepPositionWithCP56Time2a (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-		base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        internal StepPositionWithCP56Time2a(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+        base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			startIndex += 2; /* skip VTI + quality*/
+            startIndex += 2; /* skip VTI + quality*/
 
-			/* parse CP24Time2a (time stamp) */
-			timestamp = new CP56Time2a (msg, startIndex);
-		}
+            /* parse CP24Time2a (time stamp) */
+            timestamp = new CP56Time2a(msg, startIndex);
+        }
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-			frame.AppendBytes (timestamp.GetEncodedValue ());
-		}
-	}
-	
+            frame.AppendBytes(timestamp.GetEncodedValue());
+        }
+    }
+
 }
 

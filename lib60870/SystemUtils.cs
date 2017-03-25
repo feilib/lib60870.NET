@@ -32,7 +32,7 @@ namespace lib60870
     public static class SystemUtils
     {
         private static DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-       
+
         /// <summary>
         /// 获取当前时间到1970/1/1 的总秒数
         /// </summary>
@@ -42,5 +42,5 @@ namespace lib60870
             return (long)((DateTime.UtcNow - Jan1st1970).TotalMilliseconds);
         }
     }
-	
+
 }

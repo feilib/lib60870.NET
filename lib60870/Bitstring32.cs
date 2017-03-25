@@ -25,164 +25,187 @@ using System;
 
 namespace lib60870
 {
-	
-	public class Bitstring32 : InformationObject
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_BO_NA_1;
-			}
-		}
 
-		override public bool SupportsSequence {
-			get {
-				return true;
-			}
-		}
+    public class Bitstring32 : InformationObject
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_BO_NA_1;
+            }
+        }
 
-		private UInt32 value;
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-		public UInt32 Value {
-			get {
-				return this.value;
-			}
-		}
+        private UInt32 value;
 
-		private QualityDescriptor quality;
+        public UInt32 Value
+        {
+            get
+            {
+                return this.value;
+            }
+        }
 
-		public QualityDescriptor Quality {
-			get {
-				return this.quality;
-			}
-		}
+        private QualityDescriptor quality;
 
-		public Bitstring32 (int ioa, UInt32 value, QualityDescriptor quality) : base(ioa)
-		{
-			this.value = value;
-		}
+        public QualityDescriptor Quality
+        {
+            get
+            {
+                return this.quality;
+            }
+        }
 
-		internal Bitstring32 (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-			base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        public Bitstring32(int ioa, UInt32 value, QualityDescriptor quality) : base(ioa)
+        {
+            this.value = value;
+        }
 
-			value = msg [startIndex++];
-			value += ((uint)msg [startIndex++] * 0x100);
-			value += ((uint)msg [startIndex++] * 0x10000);
-			value += ((uint)msg [startIndex++] * 0x1000000);
+        internal Bitstring32(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+            base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			quality = new QualityDescriptor (msg[startIndex++]);
+            value = msg[startIndex++];
+            value += ((uint)msg[startIndex++] * 0x100);
+            value += ((uint)msg[startIndex++] * 0x10000);
+            value += ((uint)msg[startIndex++] * 0x1000000);
 
-		}
+            quality = new QualityDescriptor(msg[startIndex++]);
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+        }
 
-			frame.SetNextByte((byte) (value % 0x100));
-			frame.SetNextByte((byte) ((value / 0x100) % 0x100));
-			frame.SetNextByte((byte) ((value / 0x10000) % 0x100));
-			frame.SetNextByte((byte) (value / 0x1000000));
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-			frame.SetNextByte (quality.EncodedValue);
-		}
-	}
+            frame.SetNextByte((byte)(value % 0x100));
+            frame.SetNextByte((byte)((value / 0x100) % 0x100));
+            frame.SetNextByte((byte)((value / 0x10000) % 0x100));
+            frame.SetNextByte((byte)(value / 0x1000000));
 
-	public class Bitstring32WithCP24Time2a : Bitstring32
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_BO_TA_1;
-			}
-		}
+            frame.SetNextByte(quality.EncodedValue);
+        }
+    }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+    public class Bitstring32WithCP24Time2a : Bitstring32
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_BO_TA_1;
+            }
+        }
 
-		private CP24Time2a timestamp;
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public CP24Time2a Timestamp {
-			get {
-				return this.timestamp;
-			}
-		}
+        private CP24Time2a timestamp;
 
-		public Bitstring32WithCP24Time2a(int ioa, UInt32 value, QualityDescriptor quality, CP24Time2a timestamp) :
-			base(ioa, value, quality)
-		{
-			this.timestamp = timestamp;
-		}
+        public CP24Time2a Timestamp
+        {
+            get
+            {
+                return this.timestamp;
+            }
+        }
 
-		internal Bitstring32WithCP24Time2a (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-		base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        public Bitstring32WithCP24Time2a(int ioa, UInt32 value, QualityDescriptor quality, CP24Time2a timestamp) :
+            base(ioa, value, quality)
+        {
+            this.timestamp = timestamp;
+        }
 
-			startIndex += 5; /* value + quality */
+        internal Bitstring32WithCP24Time2a(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+        base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			/* parse CP24Time2a (time stamp) */
-			timestamp = new CP24Time2a (msg, startIndex);
-		}
+            startIndex += 5; /* value + quality */
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            /* parse CP24Time2a (time stamp) */
+            timestamp = new CP24Time2a(msg, startIndex);
+        }
 
-			frame.AppendBytes (timestamp.GetEncodedValue ());
-		}
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-	}
+            frame.AppendBytes(timestamp.GetEncodedValue());
+        }
 
-	public class Bitstring32WithCP56Time2a : Bitstring32
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_BO_TB_1;
-			}
-		}
+    }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+    public class Bitstring32WithCP56Time2a : Bitstring32
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_BO_TB_1;
+            }
+        }
 
-		private CP56Time2a timestamp;
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public CP56Time2a Timestamp {
-			get {
-				return this.timestamp;
-			}
-		}
+        private CP56Time2a timestamp;
 
-		public Bitstring32WithCP56Time2a(int ioa, UInt32 value, QualityDescriptor quality, CP56Time2a timestamp) :
-			base(ioa, value, quality)
-		{
-			this.timestamp = timestamp;
-		}
+        public CP56Time2a Timestamp
+        {
+            get
+            {
+                return this.timestamp;
+            }
+        }
 
-		internal Bitstring32WithCP56Time2a (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-		base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        public Bitstring32WithCP56Time2a(int ioa, UInt32 value, QualityDescriptor quality, CP56Time2a timestamp) :
+            base(ioa, value, quality)
+        {
+            this.timestamp = timestamp;
+        }
 
-			startIndex += 5; /* value + quality */
+        internal Bitstring32WithCP56Time2a(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+        base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			/* parse CP56Time2a (time stamp) */
-			timestamp = new CP56Time2a (msg, startIndex);
-		}
+            startIndex += 5; /* value + quality */
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            /* parse CP56Time2a (time stamp) */
+            timestamp = new CP56Time2a(msg, startIndex);
+        }
 
-			frame.AppendBytes (timestamp.GetEncodedValue ());
-		}
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-	}
+            frame.AppendBytes(timestamp.GetEncodedValue());
+        }
+
+    }
 
 }
 

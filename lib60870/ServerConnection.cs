@@ -310,7 +310,7 @@ namespace lib60870
                     bool messageHandled = false;
 
                     ASDU asdu = new ASDU(parameters, buffer, msgSize);
-                    
+
                     //根据类型来分别处理
                     switch (asdu.TypeId)
                     {

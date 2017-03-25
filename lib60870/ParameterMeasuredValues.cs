@@ -24,259 +24,295 @@ using System;
 namespace lib60870
 {
 
-	public class ParameterNormalizedValue : InformationObject
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.P_ME_NA_1;
-			}
-		}
+    public class ParameterNormalizedValue : InformationObject
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.P_ME_NA_1;
+            }
+        }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		private ScaledValue scaledValue;
+        private ScaledValue scaledValue;
 
-		public float NormalizedValue {
-			get {
-				float nv = (float) (scaledValue.Value) / 32767f;
+        public float NormalizedValue
+        {
+            get
+            {
+                float nv = (float)(scaledValue.Value) / 32767f;
 
-				return nv;
-			}
+                return nv;
+            }
 
-			set {
-				if (value > 1.0f)
-					value = 1.0f;
-				else if (value < -1.0f)
-					value = -1.0f;
-				
-				scaledValue.Value = (int)(value * 32767f); 
-			}
-		}
+            set
+            {
+                if (value > 1.0f)
+                    value = 1.0f;
+                else if (value < -1.0f)
+                    value = -1.0f;
 
-		private byte qpm;
+                scaledValue.Value = (int)(value * 32767f);
+            }
+        }
 
-		public byte QPM {
-			get {
-				return qpm;
-			}
-		}
+        private byte qpm;
 
-		public ParameterNormalizedValue (int objectAddress, float normalizedValue, byte qpm) :
-			base (objectAddress)
-		{
-			scaledValue = new ScaledValue ((int)(normalizedValue * 32767f));
+        public byte QPM
+        {
+            get
+            {
+                return qpm;
+            }
+        }
 
-			this.NormalizedValue = normalizedValue;
+        public ParameterNormalizedValue(int objectAddress, float normalizedValue, byte qpm) :
+            base(objectAddress)
+        {
+            scaledValue = new ScaledValue((int)(normalizedValue * 32767f));
 
-			this.qpm = qpm;
-		}
+            this.NormalizedValue = normalizedValue;
 
-		internal ParameterNormalizedValue (ConnectionParameters parameters, byte[] msg, int startIndex) :
-			base(parameters, msg, startIndex, false)
-		{
-			startIndex += parameters.SizeOfIOA; /* skip IOA */
+            this.qpm = qpm;
+        }
 
-			scaledValue = new ScaledValue (msg, startIndex);
-			startIndex += 2;
+        internal ParameterNormalizedValue(ConnectionParameters parameters, byte[] msg, int startIndex) :
+            base(parameters, msg, startIndex, false)
+        {
+            startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			/* parse QDS (quality) */
-			qpm = msg [startIndex++];
-		}
+            scaledValue = new ScaledValue(msg, startIndex);
+            startIndex += 2;
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            /* parse QDS (quality) */
+            qpm = msg[startIndex++];
+        }
 
-			frame.AppendBytes (scaledValue.GetEncodedValue ());
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-			frame.SetNextByte (qpm);
-		}
-	}
+            frame.AppendBytes(scaledValue.GetEncodedValue());
 
-	public class ParameterScaledValue : InformationObject
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.P_ME_NB_1;
-			}
-		}
+            frame.SetNextByte(qpm);
+        }
+    }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+    public class ParameterScaledValue : InformationObject
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.P_ME_NB_1;
+            }
+        }
 
-		private ScaledValue scaledValue;
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public ScaledValue ScaledValue {
-			get {
-				return scaledValue;
-			}
-			set {
-				scaledValue = value;
-			}
-		}
+        private ScaledValue scaledValue;
 
-		private byte qpm;
+        public ScaledValue ScaledValue
+        {
+            get
+            {
+                return scaledValue;
+            }
+            set
+            {
+                scaledValue = value;
+            }
+        }
 
-		public float QPM {
-			get {
-				return qpm;
-			}
-		}
+        private byte qpm;
 
-		public ParameterScaledValue (int objectAddress, ScaledValue value, byte qpm) :
-			base (objectAddress)
-		{
-			scaledValue = value;
+        public float QPM
+        {
+            get
+            {
+                return qpm;
+            }
+        }
 
-			this.qpm = qpm;
-		}
+        public ParameterScaledValue(int objectAddress, ScaledValue value, byte qpm) :
+            base(objectAddress)
+        {
+            scaledValue = value;
 
-		internal ParameterScaledValue (ConnectionParameters parameters, byte[] msg, int startIndex) :
-			base(parameters, msg, startIndex, false)
-		{
-			startIndex += parameters.SizeOfIOA; /* skip IOA */
+            this.qpm = qpm;
+        }
 
-			scaledValue = new ScaledValue (msg, startIndex);
-			startIndex += 2;
+        internal ParameterScaledValue(ConnectionParameters parameters, byte[] msg, int startIndex) :
+            base(parameters, msg, startIndex, false)
+        {
+            startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			/* parse QDS (quality) */
-			qpm = msg [startIndex++];
-		}
+            scaledValue = new ScaledValue(msg, startIndex);
+            startIndex += 2;
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            /* parse QDS (quality) */
+            qpm = msg[startIndex++];
+        }
 
-			frame.AppendBytes (scaledValue.GetEncodedValue ());
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-			frame.SetNextByte (qpm);
-		}
-	}
+            frame.AppendBytes(scaledValue.GetEncodedValue());
 
-	public class ParameterFloatValue : InformationObject
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.P_ME_NC_1;
-			}
-		}
+            frame.SetNextByte(qpm);
+        }
+    }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+    public class ParameterFloatValue : InformationObject
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.P_ME_NC_1;
+            }
+        }
 
-		private float value;
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public float Value {
-			get {
-				return this.value;
-			}
-		}
+        private float value;
 
-		private byte qpm;
+        public float Value
+        {
+            get
+            {
+                return this.value;
+            }
+        }
 
-		public float QPM {
-			get {
-				return qpm;
-			}
-		}
+        private byte qpm;
 
-		public ParameterFloatValue (int objectAddress, float value, byte qpm) :
-			base (objectAddress)
-		{
-			this.value = value;
+        public float QPM
+        {
+            get
+            {
+                return qpm;
+            }
+        }
 
-			this.qpm = qpm;
-		}
+        public ParameterFloatValue(int objectAddress, float value, byte qpm) :
+            base(objectAddress)
+        {
+            this.value = value;
 
-		internal ParameterFloatValue (ConnectionParameters parameters, byte[] msg, int startIndex) :
-			base(parameters, msg, startIndex, false)
-		{
-			startIndex += parameters.SizeOfIOA; /* skip IOA */
+            this.qpm = qpm;
+        }
 
-			/* parse float value */
-			value = System.BitConverter.ToSingle (msg, startIndex);
-			startIndex += 4;
+        internal ParameterFloatValue(ConnectionParameters parameters, byte[] msg, int startIndex) :
+            base(parameters, msg, startIndex, false)
+        {
+            startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-			/* parse QDS (quality) */
-			qpm = msg [startIndex++];
-		}
+            /* parse float value */
+            value = System.BitConverter.ToSingle(msg, startIndex);
+            startIndex += 4;
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            /* parse QDS (quality) */
+            qpm = msg[startIndex++];
+        }
 
-			byte[] floatEncoded = BitConverter.GetBytes (value);
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-			if (BitConverter.IsLittleEndian == false)
-				Array.Reverse (floatEncoded);
+            byte[] floatEncoded = BitConverter.GetBytes(value);
 
-			frame.AppendBytes (floatEncoded);
+            if (BitConverter.IsLittleEndian == false)
+                Array.Reverse(floatEncoded);
 
-			frame.SetNextByte (qpm);
-		}
+            frame.AppendBytes(floatEncoded);
 
-	}
+            frame.SetNextByte(qpm);
+        }
 
-	public class ParameterActivation : InformationObject
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.P_AC_NA_1;
-			}
-		}
+    }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+    public class ParameterActivation : InformationObject
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.P_AC_NA_1;
+            }
+        }
 
-		private byte qpa;
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		public static byte NOT_USED = 0;
-		public static byte DE_ACT_PREV_LOADED_PARAMETER = 1;
-		public static byte DE_ACT_OBJECT_PARAMETER = 2;
-		public static byte DE_ACT_OBJECT_TRANSMISSION= 3;
+        private byte qpa;
 
-		/// <summary>
-		/// Gets the Qualifier of Parameter Activation (QPA)
-		/// </summary>
-		/// <value>The QPA value</value>
-		public byte QPA {
-			get {
-				return qpa;
-			}
-		}
+        public static byte NOT_USED = 0;
+        public static byte DE_ACT_PREV_LOADED_PARAMETER = 1;
+        public static byte DE_ACT_OBJECT_PARAMETER = 2;
+        public static byte DE_ACT_OBJECT_TRANSMISSION = 3;
 
-		public ParameterActivation (int objectAddress, byte qpa) :
-			base (objectAddress)
-		{
-			this.qpa = qpa;
-		}
+        /// <summary>
+        /// Gets the Qualifier of Parameter Activation (QPA)
+        /// </summary>
+        /// <value>The QPA value</value>
+        public byte QPA
+        {
+            get
+            {
+                return qpa;
+            }
+        }
 
-		internal ParameterActivation (ConnectionParameters parameters, byte[] msg, int startIndex) :
-			base(parameters, msg, startIndex, false)
-		{
-			startIndex += parameters.SizeOfIOA; /* skip IOA */
+        public ParameterActivation(int objectAddress, byte qpa) :
+            base(objectAddress)
+        {
+            this.qpa = qpa;
+        }
 
-			/* parse QPA */
-			qpa = msg [startIndex++];
-		}
+        internal ParameterActivation(ConnectionParameters parameters, byte[] msg, int startIndex) :
+            base(parameters, msg, startIndex, false)
+        {
+            startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            /* parse QPA */
+            qpa = msg[startIndex++];
+        }
 
-			frame.SetNextByte (qpa);
-		}
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-	}
+            frame.SetNextByte(qpa);
+        }
+
+    }
 
 
 }

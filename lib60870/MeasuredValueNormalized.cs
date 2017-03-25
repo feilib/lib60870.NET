@@ -26,205 +26,234 @@ using System;
 namespace lib60870
 {
 
-	public class MeasuredValueNormalizedWithoutQuality : InformationObject
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_ME_ND_1;
-			}
-		}
+    public class MeasuredValueNormalizedWithoutQuality : InformationObject
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_ME_ND_1;
+            }
+        }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-		private ScaledValue scaledValue;
+        private ScaledValue scaledValue;
 
-		public float NormalizedValue {
-			get {
-				float nv = (float) (scaledValue.Value) / 32767f;
+        public float NormalizedValue
+        {
+            get
+            {
+                float nv = (float)(scaledValue.Value) / 32767f;
 
-				return nv;
-			}
-			set {
-				if (value > 1.0f)
-					value = 1.0f;
-				else if (value < -1.0f)
-					value = -1.0f;
-				
-				scaledValue.Value = (int)(value * 32767f); 
-			}
-		}
+                return nv;
+            }
+            set
+            {
+                if (value > 1.0f)
+                    value = 1.0f;
+                else if (value < -1.0f)
+                    value = -1.0f;
 
-		public MeasuredValueNormalizedWithoutQuality (int objectAddress, float value)
-			: base(objectAddress)
-		{
-			this.scaledValue = new ScaledValue ((int)(value * 32767f));
+                scaledValue.Value = (int)(value * 32767f);
+            }
+        }
 
-			this.NormalizedValue = value;
-		}
+        public MeasuredValueNormalizedWithoutQuality(int objectAddress, float value)
+            : base(objectAddress)
+        {
+            this.scaledValue = new ScaledValue((int)(value * 32767f));
 
-		internal MeasuredValueNormalizedWithoutQuality (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-			base(parameters, msg, startIndex, false)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+            this.NormalizedValue = value;
+        }
 
-			scaledValue = new ScaledValue (msg, startIndex);
-		}
+        internal MeasuredValueNormalizedWithoutQuality(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+            base(parameters, msg, startIndex, false)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+            scaledValue = new ScaledValue(msg, startIndex);
+        }
 
-			frame.AppendBytes (scaledValue.GetEncodedValue ());
-		}
-	}
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-
-	public class MeasuredValueNormalized : MeasuredValueNormalizedWithoutQuality
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_ME_NA_1;
-			}
-		}
-
-		override public bool SupportsSequence {
-			get {
-				return true;
-			}
-		}
-
-		private QualityDescriptor quality;
-
-		public QualityDescriptor Quality {
-			get {
-				return this.quality;
-			}
-		}
-
-		public MeasuredValueNormalized (int objectAddress, float value, QualityDescriptor quality)
-			: base(objectAddress, value)
-		{
-			this.quality = quality;
-		}
-
-		internal MeasuredValueNormalized (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-			base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA + 2; /* skip IOA + normalized value */
-			else
-				startIndex += 2; /* normalized value */
-
-			/* parse QDS (quality) */
-			quality = new QualityDescriptor (msg [startIndex++]);
-		}
-
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
-
-			frame.SetNextByte (quality.EncodedValue);
-		}
-	}
-	
-
-	public class MeasuredValueNormalizedWithCP24Time2a : MeasuredValueNormalized
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_ME_TA_1;
-			}
-		}
-
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
-
-		private CP24Time2a timestamp;
-
-		public CP24Time2a Timestamp {
-			get {
-				return this.timestamp;
-			}
-		}
+            frame.AppendBytes(scaledValue.GetEncodedValue());
+        }
+    }
 
 
-		public MeasuredValueNormalizedWithCP24Time2a (int objectAddress, float value, QualityDescriptor quality, CP24Time2a timestamp)
-			: base(objectAddress, value, quality)
-		{
-			this.timestamp = timestamp;
-		}
+    public class MeasuredValueNormalized : MeasuredValueNormalizedWithoutQuality
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_ME_NA_1;
+            }
+        }
 
-		internal MeasuredValueNormalizedWithCP24Time2a (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-		base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return true;
+            }
+        }
 
-			startIndex += 3; /* normalized value + quality */
+        private QualityDescriptor quality;
 
-			/* parse CP24Time2a (time stamp) */
-			timestamp = new CP24Time2a (msg, startIndex);
-		}
+        public QualityDescriptor Quality
+        {
+            get
+            {
+                return this.quality;
+            }
+        }
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
+        public MeasuredValueNormalized(int objectAddress, float value, QualityDescriptor quality)
+            : base(objectAddress, value)
+        {
+            this.quality = quality;
+        }
 
-			frame.AppendBytes (timestamp.GetEncodedValue ());
-		}
-	}
+        internal MeasuredValueNormalized(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+            base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA + 2; /* skip IOA + normalized value */
+            else
+                startIndex += 2; /* normalized value */
 
-	public class MeasuredValueNormalizedWithCP56Time2a : MeasuredValueNormalized
-	{
-		override public TypeID Type {
-			get {
-				return TypeID.M_ME_TD_1;
-			}
-		}
+            /* parse QDS (quality) */
+            quality = new QualityDescriptor(msg[startIndex++]);
+        }
 
-		override public bool SupportsSequence {
-			get {
-				return false;
-			}
-		}
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
 
-		private CP56Time2a timestamp;
+            frame.SetNextByte(quality.EncodedValue);
+        }
+    }
 
-		public CP56Time2a Timestamp {
-			get {
-				return this.timestamp;
-			}
-		}
 
-		public MeasuredValueNormalizedWithCP56Time2a (int objectAddress, float value, QualityDescriptor quality, CP56Time2a timestamp)
-			: base(objectAddress, value, quality)
-		{
-			this.timestamp = timestamp;
-		}
+    public class MeasuredValueNormalizedWithCP24Time2a : MeasuredValueNormalized
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_ME_TA_1;
+            }
+        }
 
-		internal MeasuredValueNormalizedWithCP56Time2a (ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-		base(parameters, msg, startIndex, isSequence)
-		{
-			if (!isSequence)
-				startIndex += parameters.SizeOfIOA; /* skip IOA */
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-			startIndex += 3; /* normalized value + quality */
+        private CP24Time2a timestamp;
 
-			/* parse CP56Time2a (time stamp) */
-			timestamp = new CP56Time2a (msg, startIndex);
-		}
+        public CP24Time2a Timestamp
+        {
+            get
+            {
+                return this.timestamp;
+            }
+        }
 
-		internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence) {
-			base.Encode(frame, parameters, isSequence);
 
-			frame.AppendBytes (timestamp.GetEncodedValue ());
-		}
-	}
+        public MeasuredValueNormalizedWithCP24Time2a(int objectAddress, float value, QualityDescriptor quality, CP24Time2a timestamp)
+            : base(objectAddress, value, quality)
+        {
+            this.timestamp = timestamp;
+        }
+
+        internal MeasuredValueNormalizedWithCP24Time2a(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+        base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
+
+            startIndex += 3; /* normalized value + quality */
+
+            /* parse CP24Time2a (time stamp) */
+            timestamp = new CP24Time2a(msg, startIndex);
+        }
+
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
+
+            frame.AppendBytes(timestamp.GetEncodedValue());
+        }
+    }
+
+    public class MeasuredValueNormalizedWithCP56Time2a : MeasuredValueNormalized
+    {
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_ME_TD_1;
+            }
+        }
+
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        private CP56Time2a timestamp;
+
+        public CP56Time2a Timestamp
+        {
+            get
+            {
+                return this.timestamp;
+            }
+        }
+
+        public MeasuredValueNormalizedWithCP56Time2a(int objectAddress, float value, QualityDescriptor quality, CP56Time2a timestamp)
+            : base(objectAddress, value, quality)
+        {
+            this.timestamp = timestamp;
+        }
+
+        internal MeasuredValueNormalizedWithCP56Time2a(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
+        base(parameters, msg, startIndex, isSequence)
+        {
+            if (!isSequence)
+                startIndex += parameters.SizeOfIOA; /* skip IOA */
+
+            startIndex += 3; /* normalized value + quality */
+
+            /* parse CP56Time2a (time stamp) */
+            timestamp = new CP56Time2a(msg, startIndex);
+        }
+
+        internal override void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        {
+            base.Encode(frame, parameters, isSequence);
+
+            frame.AppendBytes(timestamp.GetEncodedValue());
+        }
+    }
 
 
 
