@@ -110,8 +110,8 @@ namespace lib60870
         public ASDU(CauseOfTransmission cot, bool isTest, bool isNegative, byte oa, int ca, bool isSequence)
             : this(TypeID.M_SP_NA_1, cot, isTest, isNegative, oa, ca, isSequence)
         {
-            //标志没有类型标识？什么意思 
-            //Todo：find out !
+            //这里标志一下，没有类型标识，也就是说在初始化ASDU的时候不加类型标识
+            //当在增加信息对象的时候，类型标识根据信息对象的标识来确定。
             this.hasTypeId = false;
         }
 
@@ -153,11 +153,13 @@ namespace lib60870
 
             if (hasTypeId)
             {
+                //类型标识不同的，直接异常，不予以添加
                 if (io.Type != typeId)
                     throw new ArgumentException("Invalid information object type: expected " + typeId.ToString() + " was " + io.Type.ToString());
             }
             else
             {
+                //初始化的时候没有设置类型标识，则在赋值的时候确认类型标识
                 typeId = io.Type;
                 hasTypeId = true;
             }
