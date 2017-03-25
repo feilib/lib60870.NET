@@ -27,6 +27,8 @@ namespace lib60870
 	/// <summary>
 	/// SPE - Start events of protection equipment
 	/// according to IEC 60870-5-101:2003 7.2.6.11
+    /// 
+    /// <para>带时标的继电保护设备成组启动事件   M_EP_TB_1 = 18, 用到的</para>
 	/// </summary>
 	public class StartEvent 
 	{
