@@ -30,29 +30,13 @@ namespace lib102
     /// </summary>
 	public class ConnectionParameters
     {
-
-        /// <summary>
-        /// 类型标识长度，默认1
-        /// </summary>
-        private int sizeOfTypeId = 1;
-
-        /// <summary>
-        /// 可变结构限定词的长度，默认1
-        /// </summary>
-        private int sizeOfVSQ = 1; /* VSQ = variable sturcture qualifier */
-
-        /// <summary>
-        /// 传送原因的字节数，102中默认1
-        /// </summary>
-        private int sizeOfCOT = 1; /* (parameter b) COT = cause of transmission (1/2) */
-
         /// <summary>
         /// 链路地址：标明本站链路地址是多少
         /// </summary>
         private int linkAddress = 0;
 
         /// <summary>
-        /// 应用服务数据单元公共地址的字节数（ASDU 的 Address），默认2
+        /// 电能量数据终端设备地址的字节数（ASDU 的 Address），默认2
         /// </summary>
         private int sizeOfCA = 2; /* (parameter a) CA = common address of ASDUs (1/2) */
 
@@ -68,30 +52,10 @@ namespace lib102
         {
             ConnectionParameters copy = new ConnectionParameters();
 
-            copy.sizeOfTypeId = sizeOfTypeId;
-            copy.sizeOfVSQ = sizeOfVSQ;
-            copy.sizeOfCOT = sizeOfCOT;
             copy.linkAddress = linkAddress;
             copy.sizeOfCA = sizeOfCA;
 
             return copy;
-        }
-
-
-
-        /// <summary>
-        /// 传送原因的字节数，默认2
-        /// </summary>
-        public int SizeOfCOT
-        {
-            get
-            {
-                return this.sizeOfCOT;
-            }
-            set
-            {
-                sizeOfCOT = value;
-            }
         }
 
         /// <summary>
@@ -110,7 +74,7 @@ namespace lib102
         }
 
         /// <summary>
-        /// 应用服务数据单元公共地址的字节数（ASDU 的 Address），默认2
+        /// 电能量数据终端设备地址的字节数（ASDU 的 Address），默认2
         /// </summary>
         public int SizeOfCA
         {
@@ -124,28 +88,6 @@ namespace lib102
             }
         }
 
-
-        /// <summary>
-        /// 类型标识长度，默认1
-        /// </summary> 
-        public int SizeOfTypeId
-        {
-            get
-            {
-                return this.sizeOfTypeId;
-            }
-        }
-
-        /// <summary>
-        /// 可变结构限定词的长度，默认1
-        /// </summary>
-        public int SizeOfVSQ
-        {
-            get
-            {
-                return this.sizeOfVSQ;
-            }
-        }
     }
 }
 
