@@ -43,7 +43,7 @@ namespace lib102
         /// 获取实际byte值
         /// </summary>
         /// <returns></returns>
-        public byte getByte()
+        public byte getValue()
         {
             return val;
         }

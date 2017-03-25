@@ -32,11 +32,25 @@ namespace lib102
     public abstract class Frame
     {
         /// <summary>
-        /// 发送前调用这个，用于更新当前发送的计数器和接收计数器之类随变化内容。。。
+        /// 发送前调用，更新报文长度，还有校验和，报文结束标志。。。
+        /// <para>这里没有设置链路控制域和链路地址，如果初始化的时候没搞定的话，必须再调用这个函数之前手动处理一下</para>
         /// </summary>
-        /// <param name="sendCounter"></param>
-        /// <param name="receiveCounter"></param>
-		public abstract void PrepareToSend(int sendCounter, int receiveCounter);
+		public abstract void PrepareToSend();
+
+        /// <summary>
+        /// 发送前调用，更新报文长度，还有校验和，报文结束标志，还有链路控制域
+        /// <para>这里没有设置链路地址，如果初始化的时候没搞定的话，必须再调用这个函数之前手动处理一下</para>
+        /// </summary>
+        /// <param name="lc"></param>
+        public abstract void PrepareToSend(LinkControl lc);
+
+        /// <summary>
+        /// 发送前调用，更新报文长度，还有校验和，报文结束标志，还有链路控制域和链路地址
+        /// </summary>
+        /// <param name="lc"></param>
+        /// <param name="linkAddr"></param>
+        public abstract void PrepareToSend(LinkControl lc,int linkAddr);
+
 
         /// <summary>
         /// 复位帧（初始化帧）
