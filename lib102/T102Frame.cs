@@ -211,6 +211,42 @@ namespace lib102
         {
             return buffer;
         }
-    }
 
+        /// <summary>
+        /// 获取单字节固定帧  0xE5
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] GetBufferSingleByte()
+        {
+            return new byte[] { 0xE5 };
+        }
+
+        /// <summary>
+        /// 使用恋空控制域和链路地址，获取固定长度帧
+        /// </summary>
+        /// <param name="lc"></param>
+        /// <param name="linkAddr"></param>
+        /// <returns></returns>
+        public static byte[] GetBufferFix(LinkControl lc, int linkAddr)
+        {
+            byte[] buf = new byte[6];
+            buf[0] = 0x10;
+            buf[5] = 0x16;
+
+            //链路控制域和链路地址赋值
+            buf[1] = lc.getValue();
+            buf[2] = (byte)(linkAddr % 0x100);
+            buf[3] = (byte)(linkAddr / 0x100);
+
+            //计算校验和
+            byte checksum = 0;
+            checksum += buf[1];
+            checksum += buf[2];
+            checksum += buf[3];
+
+            buf[4] = checksum;
+
+            return buf;
+        }
+    }
 }
