@@ -55,7 +55,6 @@ namespace lib102
         /// <summary>
         /// 构造函数，通过信息内容（主要解析信息体地址）
         /// </summary>
-        /// <param name="parameters"></param>
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSequence"></param>
@@ -115,9 +114,8 @@ namespace lib102
         /// 将本信息编码进入frame，注为确保地址能顺利编码进入，请子类优先调用基类
         /// </summary>
         /// <param name="frame"></param>
-        /// <param name="parameters"></param>
         /// <param name="isSequence"></param>
-        internal virtual void Encode(Frame frame, ConnectionParameters parameters, bool isSequence)
+        internal virtual void Encode(Frame frame, bool isSequence)
         {
             //如果非连续编码，则每次编码前先编码地址
             if (!isSequence)
