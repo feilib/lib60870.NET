@@ -130,6 +130,7 @@ namespace lib102
             this.cot = cot;
             this.isTest = isTest;
             this.isNegative = isNegative;
+            this.ra = ra;
             this.ca = ca;
 
             if (isSequence)
@@ -173,8 +174,8 @@ namespace lib102
         /// 使用buff初始化一个ASDU，相当于解析
         /// </summary>
         /// <param name="parameters">链接参数</param>
-        /// <param name="msg">接收到的消息内容</param>
-        /// <param name="msgLength">消息长度（在报文头里面有）</param>
+        /// <param name="msg">接收到的消息内容（整个报文）里面自动跳掉头了。。</param>
+        /// <param name="msgLength">消息长度（整个报文的长度，包括报文头）</param>
         public ASDU(ConnectionParameters parameters, byte[] msg, int msgLength)
         {
             //保存链接参数
@@ -401,7 +402,7 @@ namespace lib102
         /// <summary>
         /// 获取第n个信息对象
         /// </summary>
-        /// <param name="index"></param>
+        /// <param name="index">0位基底</param>
         /// <returns></returns>
         public InformationObject GetElement(int index)
         {
