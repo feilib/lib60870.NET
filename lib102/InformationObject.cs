@@ -32,7 +32,7 @@ namespace lib102
     {
         /// <summary>
         /// <para>信息体对象地址</para>
-        /// <para>  长度为1-3个字节，在ConnectionParameters中设置</para>
+        /// <para>  长度为1个字节</para>
         /// <para>  连续传输方式下，从第二个信息体开始，地址不再出现，默认为上一个地址+1</para>
         /// <para>  离散传输，每个信息体都必须有地址</para>
         /// <para>  没有明确的对象地址时，用0代替</para>
@@ -78,7 +78,7 @@ namespace lib102
 
         /// <summary>
         /// <para>信息体对象地址</para>
-        /// <para>  长度为1-3个字节，在ConnectionParameters中设置</para>
+        /// <para>  长度为1个字节，在ConnectionParameters中设置</para>
         /// <para>  连续传输方式下，从第二个信息体开始，地址不再出现，默认为上一个地址+1</para>
         /// <para>  离散传输，每个信息体都必须有地址</para>
         /// <para>  没有明确的对象地址时，用0代替</para>
