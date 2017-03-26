@@ -53,7 +53,7 @@ namespace lib102
         /// </summary>
         public T102Frame()
         {
-            buffer = new byte[256000];
+            buffer = new byte[256];
 
             //两个其实标志
             buffer[0] = 0x68;
@@ -118,9 +118,9 @@ namespace lib102
         /// </summary>
         public override void PrepareToSend()
         {
-            //报文长度
-            buffer[1] = (byte)(msgSize % 0x100);
-            buffer[2] = (byte)(msgSize / 0x100);
+            //报文长度-两个字节是相同的
+            buffer[1] = (byte)(msgSize & 0xFF);
+            buffer[2] = (byte)(msgSize & 0xFF);
 
             UpdateCheckSum();
             //校验和
