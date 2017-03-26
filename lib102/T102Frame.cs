@@ -59,6 +59,7 @@ namespace lib102
             buffer[0] = 0x68;
             buffer[3] = 0x68;
 
+            //长度，不包括头4个字节，但是包括控制域和链路地址，共3个写好的地址
             msgSize = 3;
         }
 
@@ -179,7 +180,7 @@ namespace lib102
         /// <param name="value"></param>
         public override void SetNextByte(byte value)
         {
-            buffer[msgSize++] = value;
+            buffer[4 + msgSize++] = value;
         }
 
         /// <summary>
@@ -190,7 +191,7 @@ namespace lib102
         {
             for (int i = 0; i < bytes.Length; i++)
             {
-                buffer[msgSize++] = bytes[i];
+                buffer[4 + msgSize++] = bytes[i];
             }
         }
 
