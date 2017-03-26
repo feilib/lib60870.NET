@@ -121,6 +121,14 @@ namespace lib102
             FCV = false;
             FuncCode = LinkFunctionCodeDown.LinkReset;
         }
+
+        /// <summary>
+        /// 翻转FCB
+        /// </summary>
+        public void ReverseFCB()
+        {
+            FCB = !FCB;
+        }
     }
 
     /// <summary>
