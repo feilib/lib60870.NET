@@ -26,7 +26,7 @@ using System;
 namespace lib102
 {
     /// <summary>
-    /// 这里主要是102规约中用到的应用参数
+    /// 这里主要是102规约中用到的应用参数-包括ASDU地址长度和链路地址
     /// </summary>
 	public class ConnectionParameters
     {
