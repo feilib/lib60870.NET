@@ -26,21 +26,22 @@ namespace lib102
 {
     /// <summary>
     /// 7字节时标，直接转换为datetime
+    /// <para>102中的时标比较特殊，乱七八糟的字段，注意区别</para>
     /// </summary>
-	public class CP56Time2a
+	public class CP56Time2b
     {
         private byte[] encodedValue = new byte[7];
 
-        internal CP56Time2a(byte[] msg, int startIndex)
+        internal CP56Time2b(byte[] msg, int startIndex)
         {
             if (msg.Length < startIndex + 7)
-                throw new ASDUParsingException("Message too small for parsing CP56Time2a");
+                throw new ASDUParsingException("Message too small for parsing TimeInfoB");
 
             for (int i = 0; i < 7; i++)
                 encodedValue[i] = msg[startIndex + i];
         }
 
-        public CP56Time2a(DateTime time)
+        public CP56Time2b(DateTime time)
         {
             Millisecond = time.Millisecond;
             Second = time.Second;
@@ -53,7 +54,7 @@ namespace lib102
             Minute = time.Minute;
         }
 
-        public CP56Time2a()
+        public CP56Time2b()
         {
             for (int i = 0; i < 7; i++)
                 encodedValue[i] = 0;
@@ -90,7 +91,7 @@ namespace lib102
         {
             get
             {
-                return (encodedValue[0] + (encodedValue[1] * 0x100)) % 1000;
+                return (encodedValue[0] + ((encodedValue[1] & 0x03) * 0x100)) % 1000;
             }
 
             set
@@ -98,7 +99,7 @@ namespace lib102
                 int millies = (Second * 1000) + value;
 
                 encodedValue[0] = (byte)(millies & 0xff);
-                encodedValue[1] = (byte)((millies / 0x100) & 0xff);
+                encodedValue[1] = (byte)((encodedValue[1] & 0xFC) | ((millies / 0x100) & 0x03));
             }
         }
 
@@ -110,19 +111,13 @@ namespace lib102
         {
             get
             {
-                return (encodedValue[0] + (encodedValue[1] * 0x100)) / 1000;
+                return ((encodedValue[1] >> 2) & 0x3F);
             }
 
             set
             {
-                int millies = encodedValue[0] + (encodedValue[1] * 0x100);
 
-                int msPart = millies % 1000;
-
-                millies = (value * 1000) + msPart;
-
-                encodedValue[0] = (byte)(millies & 0xff);
-                encodedValue[1] = (byte)((millies / 0x100) & 0xff);
+                encodedValue[1] = (byte)((encodedValue[1] & 0x03) | (((value) << 2) & 0xFC));
             }
         }
 
@@ -228,6 +223,9 @@ namespace lib102
             }
         }
 
+        /// <summary>
+        /// 是否夏令时（SU）
+        /// </summary>
         public bool SummerTime
         {
             get
@@ -245,7 +243,8 @@ namespace lib102
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="lib60870.CP56Time2a"/> is invalid.
+        /// (IV)Gets a value indicating whether this <see cref="lib60870.CP56Time2a"/> is invalid.
+        /// <para>时间是否无效，true(1) 无效，false(0) 有效</para>
         /// </summary>
         /// <value><c>true</c> if invalid; otherwise, <c>false</c>.</value>
         public bool Invalid
@@ -265,10 +264,11 @@ namespace lib102
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="lib60870.CP26Time2a"/> was substitued by an intermediate station
+        /// (TIS)费率信息开关
+        /// <para>false(0) 费率陈述关断(OFF), true(1) 费率陈述合上(ON)</para>
         /// </summary>
         /// <value><c>true</c> if substitued; otherwise, <c>false</c>.</value>
-        public bool Substituted
+        public bool TarifInformation
         {
             get
             {
@@ -284,6 +284,44 @@ namespace lib102
             }
         }
 
+        /// <summary>
+        /// (PTF)功率费率信息-Power费率
+        /// <para>取值范围0-3,分别带代表费率1-4</para>
+        /// </summary>
+        public int PowerTarifInformation
+        {
+            get
+            {
+                return ((encodedValue[5] >> 6) & 0x03);
+            }
+
+            set
+            {
+
+                encodedValue[5] = (byte)((encodedValue[5] & 0x3f) | (((value & 0x03) << 6) & 0xC0));
+            }
+        }
+
+        /// <summary>
+        /// (ETI)能量费率信息-Energy 信息
+        /// <para>取值范围1-4</para>
+        /// </summary>
+        /// <value><c>true</c> if substitued; otherwise, <c>false</c>.</value>
+        public int EnergyTarifInformation
+        {
+            get
+            {
+                return ((encodedValue[5] >> 4) & 0x03);
+            }
+
+            set
+            {
+                encodedValue[5] = (byte)((encodedValue[5] & 0xCF) | (((value & 0x03) << 4) & 0x30));
+            }
+        }
+
+
+
         public byte[] GetEncodedValue()
         {
             return encodedValue;
@@ -291,7 +329,7 @@ namespace lib102
 
         public override string ToString()
         {
-            return string.Format("[CP56Time2a: Millisecond={0}, Second={1}, Minute={2}, Hour={3}, DayOfWeek={4}, DayOfMonth={5}, Month={6}, Year={7}, SummerTime={8}, Invalid={9} Substituted={10}]", Millisecond, Second, Minute, Hour, DayOfWeek, DayOfMonth, Month, Year, SummerTime, Invalid, Substituted);
+            return string.Format("[CP56Time2a: Millisecond={0}, Second={1}, Minute={2}, Hour={3}, DayOfWeek={4}, DayOfMonth={5}, Month={6}, Year={7}, SummerTime={8}, Invalid={9} TarifInfo={10}  EnergyTarif={11}  PowerTarif={12}]", Millisecond, Second, Minute, Hour, DayOfWeek, DayOfMonth, Month, Year, SummerTime, Invalid, TarifInformation, EnergyTarifInformation, PowerTarifInformation);
         }
 
     }
