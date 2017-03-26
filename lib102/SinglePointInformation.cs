@@ -131,12 +131,12 @@ namespace lib102
         /// <summary>
         /// 时标
         /// </summary>
-        private CP56Time2a timestamp;
+        private CP56Time2b timestamp;
 
         /// <summary>
         /// 时标
         /// </summary>
-        public CP56Time2a Timestamp
+        public CP56Time2b Timestamp
         {
             get
             {
@@ -167,7 +167,7 @@ namespace lib102
             quality = (byte)(spi & 0xFE);
 
             /* parse CP56Time2a (time stamp) */
-            timestamp = new CP56Time2a(msg, startIndex);
+            timestamp = new CP56Time2b(msg, startIndex);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace lib102
         /// <param name="value">单点值</param>
         /// <param name="quality">品质描述词</param>
         /// <param name="timestamp">时标</param>
-        public SinglePointInformation(int objectAddress, bool value, int quality, CP56Time2a timestamp) :
+        public SinglePointInformation(int objectAddress, bool value, int quality, CP56Time2b timestamp) :
             base(objectAddress)
         {
             this.value = value;
@@ -210,7 +210,7 @@ namespace lib102
 
             frame.SetNextByte(val);
 
-            //之后写
+            //之后写时间
             frame.AppendBytes(timestamp.GetEncodedValue());
         }
 
