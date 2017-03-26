@@ -82,6 +82,9 @@ namespace testserver
 
 		public static void Main (string[] args)
 		{
+            Test102.TestFrame();
+            return;
+
 			bool running = true;
 
 			Console.CancelKeyPress += delegate(object sender, ConsoleCancelEventArgs e) {
