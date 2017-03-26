@@ -274,16 +274,16 @@ namespace lib102
                     if (isFirst)
                     {
                         //第一条，必须编码地址进去，sequence这个参数传递false就好了
-                        io.Encode(frame, parameters, false);
+                        io.Encode(frame, false);
                         isFirst = false;
                     }
                     else
                     {
                         //后面的，根据是否为连续，决定是否编码地址
                         if (IsSquence)
-                            io.Encode(frame, parameters, true);
+                            io.Encode(frame, true);
                         else
-                            io.Encode(frame, parameters, false);
+                            io.Encode(frame, false);
                     }
 
                 }
