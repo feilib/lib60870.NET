@@ -51,6 +51,7 @@
     <Compile Include="LinkControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordAddress.cs" />
+    <Compile Include="SinglePointInformation.cs" />
     <Compile Include="SystemUtils.cs" />
     <Compile Include="T102Frame.cs" />
     <Compile Include="TypeID.cs" />

@@ -412,22 +412,10 @@ namespace lib102
             switch (typeId)
             {
                 #region 根据不同的类型标识，做不同的解析
-                case TypeID.M_SP_TA_2: /* 1 */
-
-                    elementSize = 1;
-
-                    //if (IsSquence)
-                    //{
-                    //    int ioa = InformationObject.ParseInformationObjectAddress(parameters, payload, 0);
-
-                    //    retVal = new SinglePointInformation(parameters, payload, parameters.SizeOfIOA + (index * elementSize), true);
-
-                    //    retVal.ObjectAddress = ioa + index;
-
-                    //}
-                    //else
-                    //    retVal = new SinglePointInformation(parameters, payload, index * (parameters.SizeOfIOA + elementSize), false);
-
+                case TypeID.M_SP_TA_2: /* 1 单位遥信 */
+                    //1个字节地址+ 1个字节内容+ 7个字节的时标
+                    elementSize = 1 + 1 + 7;
+                    retVal = new SinglePointInformation(parameters, payload, index * elementSize, false);
                     break;
 
                 case TypeID.M_IT_TA_2: /* 2 */
