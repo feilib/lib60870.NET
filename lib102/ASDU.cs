@@ -402,7 +402,7 @@ namespace lib102
         /// <summary>
         /// 获取第n个信息对象
         /// </summary>
-        /// <param name="index">0位基底</param>
+        /// <param name="index">0为基底</param>
         /// <returns></returns>
         public InformationObject GetElement(int index)
         {
