@@ -1,3 +1,25 @@
+/*
+ *  CP56Time2a.cs
+ *
+ *  Copyright 2016 MZ Automation GmbH
+ *
+ *  This file is part of lib60870.NET
+ *
+ *  lib60870.NET is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  lib60870.NET is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with lib60870.NET.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  See COPYING file for the complete license text.
+ */
 using System;
 
 namespace lib102
@@ -6,35 +28,32 @@ namespace lib102
     /// 7字节时标，直接转换为datetime
     /// <para>102中的时标比较特殊，乱七八糟的字段，注意区别</para>
     /// </summary>
-	public class CP56Time2b
+	public class CP40Time2b
     {
-        private byte[] encodedValue = new byte[7];
+        private byte[] encodedValue = new byte[5];
 
-        internal CP56Time2b(byte[] msg, int startIndex)
+        internal CP40Time2b(byte[] msg, int startIndex)
         {
-            if (msg.Length < startIndex + 7)
+            if (msg.Length < startIndex + 5)
                 throw new ASDUParsingException("Message too small for parsing TimeInfoB");
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 5; i++)
                 encodedValue[i] = msg[startIndex + i];
         }
 
-        public CP56Time2b(DateTime time)
+        public CP40Time2b(DateTime time)
         {
-            Millisecond = time.Millisecond;
-            Second = time.Second;
             Year = time.Year % 100;
             Console.WriteLine("Year: " + time.Year + " " + Year);
-
             Month = time.Month;
             DayOfMonth = time.Day;
             Hour = time.Hour;
             Minute = time.Minute;
         }
 
-        public CP56Time2b()
+        public CP40Time2b()
         {
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 5; i++)
                 encodedValue[i] = 0;
         }
 
@@ -50,7 +69,7 @@ namespace lib102
             if (this.Year < (startYear % 100))
                 baseYear += 100;
 
-            DateTime value = new DateTime(baseYear + this.Year, this.Month, this.DayOfMonth, this.Hour, this.Minute, this.Second, this.Millisecond);
+            DateTime value = new DateTime(baseYear + this.Year, this.Month, this.DayOfMonth, this.Hour, this.Minute, 0, 0);
 
             return value;
         }
@@ -58,45 +77,6 @@ namespace lib102
         public DateTime GetDateTime()
         {
             return GetDateTime(1970);
-        }
-
-
-        /// <summary>
-        /// Gets or sets the millisecond part of the time value
-        /// </summary>
-        /// <value>The millisecond.</value>
-        public int Millisecond
-        {
-            get
-            {
-                return (encodedValue[0] + ((encodedValue[1] & 0x03) * 0x100)) % 1000;
-            }
-
-            set
-            {
-                int millies = (Second * 1000) + value;
-
-                encodedValue[0] = (byte)(millies & 0xff);
-                encodedValue[1] = (byte)((encodedValue[1] & 0xFC) | ((millies / 0x100) & 0x03));
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the second (range 0 to 59)
-        /// </summary>
-        /// <value>The second.</value>
-        public int Second
-        {
-            get
-            {
-                return ((encodedValue[1] >> 2) & 0x3F);
-            }
-
-            set
-            {
-
-                encodedValue[1] = (byte)((encodedValue[1] & 0x03) | (((value) << 2) & 0xFC));
-            }
         }
 
         /// <summary>
@@ -107,12 +87,12 @@ namespace lib102
         {
             get
             {
-                return (encodedValue[2] & 0x3f);
+                return (encodedValue[0] & 0x3f);
             }
 
             set
             {
-                encodedValue[2] = (byte)((encodedValue[2] & 0xc0) | (value & 0x3f));
+                encodedValue[0] = (byte)((encodedValue[0] & 0xc0) | (value & 0x3f));
             }
         }
 
@@ -124,12 +104,12 @@ namespace lib102
         {
             get
             {
-                return (encodedValue[3] & 0x1f);
+                return (encodedValue[1] & 0x1f);
             }
 
             set
             {
-                encodedValue[3] = (byte)((encodedValue[3] & 0xe0) | (value & 0x1f));
+                encodedValue[1] = (byte)((encodedValue[1] & 0xe0) | (value & 0x1f));
             }
         }
 
@@ -141,12 +121,12 @@ namespace lib102
         {
             get
             {
-                return ((encodedValue[4] & 0xe0) >> 5);
+                return ((encodedValue[2] & 0xe0) >> 5);
             }
 
             set
             {
-                encodedValue[4] = (byte)((encodedValue[4] & 0x1f) | ((value & 0x07) << 5));
+                encodedValue[2] = (byte)((encodedValue[2] & 0x1f) | ((value & 0x07) << 5));
             }
         }
 
@@ -158,12 +138,12 @@ namespace lib102
         {
             get
             {
-                return (encodedValue[4] & 0x1f);
+                return (encodedValue[2] & 0x1f);
             }
 
             set
             {
-                encodedValue[4] = (byte)((encodedValue[4] & 0xe0) + (value & 0x1f));
+                encodedValue[2] = (byte)((encodedValue[2] & 0xe0) + (value & 0x1f));
             }
         }
 
@@ -175,12 +155,12 @@ namespace lib102
         {
             get
             {
-                return (encodedValue[5] & 0x0f);
+                return (encodedValue[3] & 0x0f);
             }
 
             set
             {
-                encodedValue[5] = (byte)((encodedValue[5] & 0xf0) + (value & 0x0f));
+                encodedValue[3] = (byte)((encodedValue[3] & 0xf0) + (value & 0x0f));
             }
         }
 
@@ -192,12 +172,12 @@ namespace lib102
         {
             get
             {
-                return (encodedValue[6] & 0x7f);
+                return (encodedValue[4] & 0x7f);
             }
 
             set
             {
-                encodedValue[6] = (byte)((encodedValue[6] & 0x80) + (value & 0x7f));
+                encodedValue[4] = (byte)((encodedValue[4] & 0x80) + (value & 0x7f));
             }
         }
 
@@ -208,15 +188,15 @@ namespace lib102
         {
             get
             {
-                return ((encodedValue[3] & 0x80) != 0);
+                return ((encodedValue[1] & 0x80) != 0);
             }
 
             set
             {
                 if (value)
-                    encodedValue[3] |= 0x80;
+                    encodedValue[1] |= 0x80;
                 else
-                    encodedValue[3] &= 0x7f;
+                    encodedValue[1] &= 0x7f;
             }
         }
 
@@ -229,15 +209,15 @@ namespace lib102
         {
             get
             {
-                return ((encodedValue[2] & 0x80) != 0);
+                return ((encodedValue[0] & 0x80) != 0);
             }
 
             set
             {
                 if (value)
-                    encodedValue[2] |= 0x80;
+                    encodedValue[0] |= 0x80;
                 else
-                    encodedValue[2] &= 0x7f;
+                    encodedValue[0] &= 0x7f;
             }
         }
 
@@ -250,15 +230,15 @@ namespace lib102
         {
             get
             {
-                return ((encodedValue[2] & 0x40) == 0x40);
+                return ((encodedValue[0] & 0x40) == 0x40);
             }
 
             set
             {
                 if (value)
-                    encodedValue[2] |= 0x40;
+                    encodedValue[0] |= 0x40;
                 else
-                    encodedValue[2] &= 0xbf;
+                    encodedValue[0] &= 0xbf;
             }
         }
 
@@ -270,13 +250,13 @@ namespace lib102
         {
             get
             {
-                return ((encodedValue[5] >> 6) & 0x03);
+                return ((encodedValue[3] >> 6) & 0x03);
             }
 
             set
             {
 
-                encodedValue[5] = (byte)((encodedValue[5] & 0x3f) | (((value & 0x03) << 6) & 0xC0));
+                encodedValue[3] = (byte)((encodedValue[3] & 0x3f) | (((value & 0x03) << 6) & 0xC0));
             }
         }
 
@@ -289,12 +269,12 @@ namespace lib102
         {
             get
             {
-                return ((encodedValue[5] >> 4) & 0x03);
+                return ((encodedValue[3] >> 4) & 0x03);
             }
 
             set
             {
-                encodedValue[5] = (byte)((encodedValue[5] & 0xCF) | (((value & 0x03) << 4) & 0x30));
+                encodedValue[3] = (byte)((encodedValue[3] & 0xCF) | (((value & 0x03) << 4) & 0x30));
             }
         }
 
@@ -307,7 +287,7 @@ namespace lib102
 
         public override string ToString()
         {
-            return string.Format("[CP56Time2b: Millisecond={0}, Second={1}, Minute={2}, Hour={3}, DayOfWeek={4}, DayOfMonth={5}, Month={6}, Year={7}, SummerTime={8}, Invalid={9} TarifInfo={10}  EnergyTarif={11}  PowerTarif={12}]", Millisecond, Second, Minute, Hour, DayOfWeek, DayOfMonth, Month, Year, SummerTime, Invalid, TarifInformation, EnergyTarifInformation, PowerTarifInformation);
+            return string.Format("[CP40Time2b: Minute={0}, Hour={1}, DayOfWeek={2}, DayOfMonth={3}, Month={4}, Year={5}, SummerTime={6}, Invalid={7} TarifInfo={8}  EnergyTarif={9}  PowerTarif={10}]", Millisecond, Second, Minute, Hour, DayOfWeek, DayOfMonth, Month, Year, SummerTime, Invalid, TarifInformation, EnergyTarifInformation, PowerTarifInformation);
         }
 
     }
