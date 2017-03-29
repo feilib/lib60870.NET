@@ -100,7 +100,7 @@ namespace lib102
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public IntegratedTotals(int ioa, int val,bool carry,bool counterAdj,bool invalid,int sn)
+        public IntegratedTotals(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa)
         {
             this.Value = val;
@@ -110,18 +110,57 @@ namespace lib102
             this.SerialNo = sn;
         }
 
-        internal IntegratedTotals( byte[] msg, int startIndex, bool isSquence) :
-            base( msg, startIndex, isSquence)
+        internal IntegratedTotals(byte[] msg, int startIndex, bool isSquence) :
+            base(msg, startIndex, isSquence)
         {
             if (!isSquence)
-                startIndex ++; /* skip IOA */
-            
+                startIndex++; /* skip IOA */
+            //4字节的数据
+            Value = msg[startIndex++];
+            Value += msg[startIndex++] * 0x100;
+            Value += msg[startIndex++] * 0x10000;
+            Value += msg[startIndex++] * 0x1000000;
+
+            //第五字节的信息数据
+            byte tmp = msg[startIndex++];
+            Invalid = ((tmp & 0x80) != 0);
+            CounterAdjusted = ((tmp & 0x40) != 0);
+            Carry = ((tmp & 0x20) != 0);
+            SerialNo = tmp * 0x1F;
+
         }
 
-        internal override void Encode(Frame frame,  bool isSequence)
+        /// <summary>
+        /// 将信息编码进入frame
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="isSequence"></param>
+        internal override void Encode(Frame frame, bool isSequence)
         {
             base.Encode(frame, isSequence);
+            //4字节的数据
+            frame.SetNextByte((byte)(Value & 0x00FF));
+            frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
+            frame.SetNextByte((byte)((Value & 0x00FF0000) >> 4));
+            frame.SetNextByte((byte)((Value & 0x00FF000000) >> 6));
 
+            //第五字节
+            byte tmp = 0;
+            if (Invalid) tmp |= 0x80;
+            if (CounterAdjusted) tmp |= 0x40;
+            if (Carry) tmp |= 0x20;
+            tmp |= (byte)(serialNo & 0x1F);
+            frame.SetNextByte(tmp);
+
+            checksum = 0;
+            #region 计算校核
+            checksum+=((byte)(Value & 0x00FF));
+            checksum += ((byte)((Value & 0x00FF00) >> 2));
+            checksum += ((byte)((Value & 0x00FF0000) >> 4));
+            checksum += ((byte)((Value & 0x00FF000000) >> 6));
+            checksum += tmp;
+            #endregion
+            frame.SetNextByte(tmp);
         }
     }
 }
