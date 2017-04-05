@@ -15,7 +15,7 @@ namespace lib102
     public class OperationalIntegratedTotals : IntegratedTotals
     {
         /// <summary>
-        /// 类型标识M_IT_TG_2（8），记账电能累计量，每个量占4字节，表示范围：-99 999 999~+99 999 999
+        /// 类型标识M_IT_TG_2（8），运行电能累计量，每个量占4字节，表示范围：-99 999 999~+99 999 999
         /// </summary>
         override public TypeID Type
         {
@@ -34,7 +34,7 @@ namespace lib102
             }
         }
 
-        //不喊校核
+        //不含校核
         protected override void UpdateHasCheckSum()
         {
             HasCheckSum = false;
@@ -76,7 +76,7 @@ namespace lib102
     public class OperationalIntegratedTotalsWith3Byte : IntegratedTotalsWith3Byte
     {
         /// <summary>
-        /// 类型标识M_IT_TG_2（9），记账电能累计量，每个量占3字节，表示范围：- 999 999~+ 999 999
+        /// 类型标识M_IT_TG_2（9），运行电能累计量，每个量占3字节，表示范围：- 999 999~+ 999 999
         /// </summary>
         override public TypeID Type
         {
@@ -95,7 +95,7 @@ namespace lib102
             }
         }
 
-        //不喊校核
+        //不含校核
         protected override void UpdateHasCheckSum()
         {
             HasCheckSum = false;
@@ -137,7 +137,7 @@ namespace lib102
     public class OperationalIntegratedTotalsWith2Byte : IntegratedTotalsWith2Byte
     {
         /// <summary>
-        /// 类型标识M_IT_TG_I（10），记账电能累计量，每个量占2字节，表示范围：-999~+ 999
+        /// 类型标识M_IT_TG_I（10），运行电能累计量，每个量占2字节，表示范围：-999~+ 999
         /// </summary>
         override public TypeID Type
         {
