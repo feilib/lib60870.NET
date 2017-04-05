@@ -3,7 +3,7 @@ using System;
 namespace lib102
 {
     /// <summary>
-    /// 记账（计费）点能累计量
+    /// 记账（计费）点能累计量 4字节量
     /// <para>非连续</para>
     /// <para>信息对象地址+电能累计量+校核</para>
     /// <para>所有信息对象最后，增加一个5字节时标</para>
@@ -110,6 +110,12 @@ namespace lib102
             this.SerialNo = sn;
         }
 
+        /// <summary>
+        /// 使用接收到的数据解析出来一个对象
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="isSquence"></param>
         internal IntegratedTotals(byte[] msg, int startIndex, bool isSquence) :
             base(msg, startIndex, isSquence)
         {
@@ -127,7 +133,22 @@ namespace lib102
             CounterAdjusted = ((tmp & 0x40) != 0);
             Carry = ((tmp & 0x20) != 0);
             SerialNo = tmp * 0x1F;
+            //校核
+            checksum = msg[startIndex++];
 
+            #region 计算校核
+            byte checksum1 = 0;
+            checksum1 += ((byte)(Value & 0x00FF));
+            checksum1 += ((byte)((Value & 0x00FF00) >> 2));
+            checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
+            checksum1 += ((byte)((Value & 0x00FF000000) >> 6));
+            checksum1 += tmp;
+
+            if(checksum != checksum1)
+            {
+                Console.WriteLine("校核检验错误");
+            }
+            #endregion
         }
 
         /// <summary>
@@ -162,6 +183,233 @@ namespace lib102
             #endregion
             frame.SetNextByte(tmp);
         }
+    }
+
+    /// <summary>
+    /// 记账（计费）点能累计量  3字节量
+    /// <para>非连续</para>
+    /// <para>信息对象地址+电能累计量+校核</para>
+    /// <para>所有信息对象最后，增加一个5字节时标</para>
+    /// </summary>
+    public class IntegratedTotalsWith3Byte:IntegratedTotals
+    {
+        /// <summary>
+        /// 类型标识M_IT_TB_2（3），记账电能累计量，每个量占3字节，表示范围：-999 999~+999 999
+        /// </summary>
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_IT_TB_2;
+            }
+        }
+
+        //不支持连续
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 使用基本信息创建
+        /// </summary>
+        /// <param name="ioa"></param>
+        /// <param name="val"></param>
+        /// <param name="carry"></param>
+        /// <param name="counterAdj"></param>
+        /// <param name="invalid"></param>
+        /// <param name="sn"></param>
+        public IntegratedTotalsWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+            : base(ioa,val,carry,counterAdj,invalid,sn)
+        {
+        }
+
+        /// <summary>
+        /// 使用接收到的数据解析出来一个对象
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="isSquence"></param>
+        internal IntegratedTotalsWith3Byte(byte[] msg, int startIndex, bool isSquence) :
+            base(msg, startIndex, isSquence)
+        {
+            if (!isSquence)
+                startIndex++; /* skip IOA */
+            //3字节的数据
+            Value = msg[startIndex++];
+            Value += msg[startIndex++] * 0x100;
+            Value += msg[startIndex++] * 0x10000;
+
+
+            //第4字节的信息数据
+            byte tmp = msg[startIndex++];
+            Invalid = ((tmp & 0x80) != 0);
+            CounterAdjusted = ((tmp & 0x40) != 0);
+            Carry = ((tmp & 0x20) != 0);
+            SerialNo = tmp * 0x1F;
+            //校核
+            checksum = msg[startIndex++];
+
+            #region 计算校核
+            byte checksum1 = 0;
+            checksum1 += ((byte)(Value & 0x00FF));
+            checksum1 += ((byte)((Value & 0x00FF00) >> 2));
+            checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
+            checksum1 += tmp;
+
+            if (checksum != checksum1)
+            {
+                Console.WriteLine("校核检验错误");
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 将信息编码进入frame
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="isSequence"></param>
+        internal override void Encode(Frame frame, bool isSequence)
+        {
+            base.Encode(frame, isSequence);
+            //3字节的数据
+            frame.SetNextByte((byte)(Value & 0x00FF));
+            frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
+            frame.SetNextByte((byte)((Value & 0x00FF0000) >> 4));
+
+            //第4字节
+            byte tmp = 0;
+            if (Invalid) tmp |= 0x80;
+            if (CounterAdjusted) tmp |= 0x40;
+            if (Carry) tmp |= 0x20;
+            tmp |= (byte)(serialNo & 0x1F);
+            frame.SetNextByte(tmp);
+
+            checksum = 0;
+            #region 计算校核
+            checksum += ((byte)(Value & 0x00FF));
+            checksum += ((byte)((Value & 0x00FF00) >> 2));
+            checksum += ((byte)((Value & 0x00FF0000) >> 4));
+            checksum += tmp;
+            #endregion
+            frame.SetNextByte(tmp);
+        }
+
+    }
+
+
+    /// <summary>
+    /// 记账（计费）点能累计量  2字节量
+    /// <para>非连续</para>
+    /// <para>信息对象地址+电能累计量+校核</para>
+    /// <para>所有信息对象最后，增加一个5字节时标</para>
+    /// </summary>
+    public class IntegratedTotalsWith2Byte : IntegratedTotals
+    {
+        /// <summary>
+        /// 类型标识M_IT_TC_2（4），记账电能累计量，每个量占2字节，表示范围：-999~+999
+        /// </summary>
+        override public TypeID Type
+        {
+            get
+            {
+                return TypeID.M_IT_TC_2;
+            }
+        }
+
+        //不支持连续
+        override public bool SupportsSequence
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 使用基本信息创建
+        /// </summary>
+        /// <param name="ioa"></param>
+        /// <param name="val"></param>
+        /// <param name="carry"></param>
+        /// <param name="counterAdj"></param>
+        /// <param name="invalid"></param>
+        /// <param name="sn"></param>
+        public IntegratedTotalsWith2Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+            : base(ioa, val, carry, counterAdj, invalid, sn)
+        {
+        }
+
+        /// <summary>
+        /// 使用接收到的数据解析出来一个对象
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="isSquence"></param>
+        internal IntegratedTotalsWith2Byte(byte[] msg, int startIndex, bool isSquence) :
+            base(msg, startIndex, isSquence)
+        {
+            if (!isSquence)
+                startIndex++; /* skip IOA */
+            //2字节的数据
+            Value = msg[startIndex++];
+            Value += msg[startIndex++] * 0x100;
+
+
+            //第3字节的信息数据
+            byte tmp = msg[startIndex++];
+            Invalid = ((tmp & 0x80) != 0);
+            CounterAdjusted = ((tmp & 0x40) != 0);
+            Carry = ((tmp & 0x20) != 0);
+            SerialNo = tmp * 0x1F;
+            //校核
+            checksum = msg[startIndex++];
+
+            #region 计算校核
+            byte checksum1 = 0;
+            checksum1 += ((byte)(Value & 0x00FF));
+            checksum1 += ((byte)((Value & 0x00FF00) >> 2));
+            checksum1 += tmp;
+
+            if (checksum != checksum1)
+            {
+                Console.WriteLine("校核检验错误");
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 将信息编码进入frame
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="isSequence"></param>
+        internal override void Encode(Frame frame, bool isSequence)
+        {
+            base.Encode(frame, isSequence);
+            //2字节的数据
+            frame.SetNextByte((byte)(Value & 0x00FF));
+            frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
+
+            //第3字节
+            byte tmp = 0;
+            if (Invalid) tmp |= 0x80;
+            if (CounterAdjusted) tmp |= 0x40;
+            if (Carry) tmp |= 0x20;
+            tmp |= (byte)(serialNo & 0x1F);
+            frame.SetNextByte(tmp);
+
+            checksum = 0;
+            #region 计算校核
+            checksum += ((byte)(Value & 0x00FF));
+            checksum += ((byte)((Value & 0x00FF00) >> 2));
+            checksum += tmp;
+            #endregion
+            frame.SetNextByte(tmp);
+        }
+
     }
 }
 
