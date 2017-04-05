@@ -151,8 +151,8 @@ namespace lib102
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSequence"></param>
-        internal SinglePointInformation(ConnectionParameters parameters, byte[] msg, int startIndex, bool isSequence) :
-            base( msg, startIndex, isSequence)
+        internal SinglePointInformation(byte[] msg, int startIndex, bool isSequence) :
+            base(msg, startIndex, isSequence)
         {
             if (!isSequence)
                 startIndex += 1; /* skip IOA 跳过信息体地址(在基类中解析过了) */
@@ -190,13 +190,13 @@ namespace lib102
         /// </summary>
         /// <param name="frame"></param>
         /// <param name="isSequence">不支持连续，强制写false了</param>
-        internal override void Encode(Frame frame, bool isSequence=false)
+        internal override void Encode(Frame frame, bool isSequence = false)
         {
             //直接写死把，这个情况不支持连续
             base.Encode(frame, false);
 
             //quality 需要左移一位
-            byte val = (byte)((quality*2)&0xFF);
+            byte val = (byte)((quality * 2) & 0xFF);
 
             //设置值
             if (value)
