@@ -45,6 +45,17 @@ namespace lib102
         }
         #endregion
 
+        #region 用于子类通知基类，目前是否需要校核(类型标识8-13 不需要校核)
+        protected bool HasCheckSum;
+        /// <summary>
+        /// 更新校核,类型标识8-13请覆写此函数，并将HasCheckSum置false即可
+        /// </summary>
+        protected virtual void UpdateHasCheckSum()
+        {
+            HasCheckSum = true;
+        }
+        #endregion
+
         #region 电能累计量IT
         //电能累计量结构：
         //---------------------------------
@@ -135,6 +146,7 @@ namespace lib102
             base(msg, startIndex, isSquence)
         {
             UpdateBytesOfValue();
+            UpdateHasCheckSum();
             if (!isSquence)
                 startIndex++; /* skip IOA */
             //4字节的数据
@@ -152,23 +164,26 @@ namespace lib102
             Carry = ((tmp & 0x20) != 0);
             SerialNo = tmp * 0x1F;
             //校核
-            checksum = msg[startIndex++];
-
-            #region 计算校核
-            byte checksum1 = 0;
-            checksum1 += ((byte)(Value & 0x00FF));
-            checksum1 += ((byte)((Value & 0x00FF00) >> 2));
-            if (BytesOfValue > 2)
-                checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
-            if (BytesOfValue > 3)
-                checksum1 += ((byte)((Value & 0x00FF000000) >> 6));
-            checksum1 += tmp;
-
-            if (checksum != checksum1)
+            if (HasCheckSum)
             {
-                Console.WriteLine("校核检验错误");
+                checksum = msg[startIndex++];
+
+                #region 计算校核
+                byte checksum1 = 0;
+                checksum1 += ((byte)(Value & 0x00FF));
+                checksum1 += ((byte)((Value & 0x00FF00) >> 2));
+                if (BytesOfValue > 2)
+                    checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
+                if (BytesOfValue > 3)
+                    checksum1 += ((byte)((Value & 0x00FF000000) >> 6));
+                checksum1 += tmp;
+
+                if (checksum != checksum1)
+                {
+                    Console.WriteLine("校核检验错误");
+                }
+                #endregion
             }
-            #endregion
         }
 
         /// <summary>
@@ -181,7 +196,7 @@ namespace lib102
             base.Encode(frame, isSequence);
 
             UpdateBytesOfValue();
-
+            UpdateHasCheckSum();
             //4字节的数据
             frame.SetNextByte((byte)(Value & 0x00FF));
             frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
@@ -198,17 +213,21 @@ namespace lib102
             tmp |= (byte)(serialNo & 0x1F);
             frame.SetNextByte(tmp);
 
-            checksum = 0;
-            #region 计算校核
-            checksum += ((byte)(Value & 0x00FF));
-            checksum += ((byte)((Value & 0x00FF00) >> 2));
-            if (BytesOfValue > 2)
-                checksum += ((byte)((Value & 0x00FF0000) >> 4));
-            if (BytesOfValue > 3)
-                checksum += ((byte)((Value & 0x00FF000000) >> 6));
-            checksum += tmp;
-            #endregion
-            frame.SetNextByte(checksum);
+            //校核
+            if (HasCheckSum)
+            {
+                checksum = 0;
+                #region 计算校核
+                checksum += ((byte)(Value & 0x00FF));
+                checksum += ((byte)((Value & 0x00FF00) >> 2));
+                if (BytesOfValue > 2)
+                    checksum += ((byte)((Value & 0x00FF0000) >> 4));
+                if (BytesOfValue > 3)
+                    checksum += ((byte)((Value & 0x00FF000000) >> 6));
+                checksum += tmp;
+                #endregion
+                frame.SetNextByte(checksum);
+            }
         }
     }
 
