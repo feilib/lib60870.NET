@@ -163,7 +163,7 @@ namespace lib102
             Invalid = ((tmp & 0x80) != 0);
             CounterAdjusted = ((tmp & 0x40) != 0);
             Carry = ((tmp & 0x20) != 0);
-            SerialNo = tmp * 0x1F;
+            SerialNo = tmp & 0x1F;
             //Ð£ºË
             if (HasCheckSum)
             {
