@@ -287,7 +287,8 @@ namespace lib102
 
         public override string ToString()
         {
-            return string.Format("[CP40Time2b: Minute={0}, Hour={1}, DayOfWeek={2}, DayOfMonth={3}, Month={4}, Year={5}, SummerTime={6}, Invalid={7} TarifInfo={8}  EnergyTarif={9}  PowerTarif={10}]", Millisecond, Second, Minute, Hour, DayOfWeek, DayOfMonth, Month, Year, SummerTime, Invalid, TarifInformation, EnergyTarifInformation, PowerTarifInformation);
+            return string.Format("[CP40Time2b: Minute={0}, Hour={1}, DayOfWeek={2}, DayOfMonth={3}, Month={4}, Year={5}, SummerTime={6}, Invalid={7} TarifInfo={8}  EnergyTarif={9}  PowerTarif={10}]", 
+                                                Minute, Hour, DayOfWeek, DayOfMonth, Month, Year, SummerTime, Invalid, TarifInformation, EnergyTarifInformation, PowerTarifInformation);
         }
 
     }
