@@ -48,6 +48,7 @@
     <Compile Include="CP56Time2b.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="InformationObject.cs" />
+    <Compile Include="IntegratedPeriod.cs" />
     <Compile Include="IntegratedTotals.cs" />
     <Compile Include="LinkControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
