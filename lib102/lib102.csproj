@@ -51,6 +51,7 @@
     <Compile Include="IntegratedPeriod.cs" />
     <Compile Include="IntegratedTotals.cs" />
     <Compile Include="LinkControl.cs" />
+    <Compile Include="OperationalIntegratedPeriod.cs" />
     <Compile Include="OperationalIntegratedTotals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecordAddress.cs" />
