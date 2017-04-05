@@ -3,7 +3,7 @@ using System;
 namespace lib102
 {
     /// <summary>
-    /// 记账（计费）点能累计量 4字节量
+    /// 记账（计费）电能累计量 4字节量
     /// <para>非连续</para>
     /// <para>信息对象地址+电能累计量+校核</para>
     /// <para>所有信息对象最后，增加一个5字节时标</para>
@@ -29,6 +29,21 @@ namespace lib102
                 return false;
             }
         }
+
+        #region 专门用于子类通知基类，目前使用多少个字节的变量
+        /// <summary>
+        /// Value总共有4个字节
+        /// </summary>
+        protected int BytesOfValue;
+
+        /// <summary>
+        /// 在使用BytesOfValue之前调用一下这个，如果有变化的话，在子类中就已经更改了。。。
+        /// </summary>
+        protected virtual void UpdateBytesOfValue()
+        {
+            BytesOfValue = 4;
+        }
+        #endregion
 
         #region 电能累计量IT
         //电能累计量结构：
@@ -119,15 +134,18 @@ namespace lib102
         internal IntegratedTotals(byte[] msg, int startIndex, bool isSquence) :
             base(msg, startIndex, isSquence)
         {
+            UpdateBytesOfValue();
             if (!isSquence)
                 startIndex++; /* skip IOA */
             //4字节的数据
             Value = msg[startIndex++];
             Value += msg[startIndex++] * 0x100;
-            Value += msg[startIndex++] * 0x10000;
-            Value += msg[startIndex++] * 0x1000000;
+            if (BytesOfValue > 2)
+                Value += msg[startIndex++] * 0x10000;
+            if (BytesOfValue > 3)
+                Value += msg[startIndex++] * 0x1000000;
 
-            //第五字节的信息数据
+            //下一字节的信息数据
             byte tmp = msg[startIndex++];
             Invalid = ((tmp & 0x80) != 0);
             CounterAdjusted = ((tmp & 0x40) != 0);
@@ -140,11 +158,13 @@ namespace lib102
             byte checksum1 = 0;
             checksum1 += ((byte)(Value & 0x00FF));
             checksum1 += ((byte)((Value & 0x00FF00) >> 2));
-            checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
-            checksum1 += ((byte)((Value & 0x00FF000000) >> 6));
+            if (BytesOfValue > 2)
+                checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
+            if (BytesOfValue > 3)
+                checksum1 += ((byte)((Value & 0x00FF000000) >> 6));
             checksum1 += tmp;
 
-            if(checksum != checksum1)
+            if (checksum != checksum1)
             {
                 Console.WriteLine("校核检验错误");
             }
@@ -159,13 +179,18 @@ namespace lib102
         internal override void Encode(Frame frame, bool isSequence)
         {
             base.Encode(frame, isSequence);
+
+            UpdateBytesOfValue();
+
             //4字节的数据
             frame.SetNextByte((byte)(Value & 0x00FF));
             frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
-            frame.SetNextByte((byte)((Value & 0x00FF0000) >> 4));
-            frame.SetNextByte((byte)((Value & 0x00FF000000) >> 6));
+            if (BytesOfValue > 2)
+                frame.SetNextByte((byte)((Value & 0x00FF0000) >> 4));
+            if (BytesOfValue > 3)
+                frame.SetNextByte((byte)((Value & 0x00FF000000) >> 6));
 
-            //第五字节
+            //下一字节
             byte tmp = 0;
             if (Invalid) tmp |= 0x80;
             if (CounterAdjusted) tmp |= 0x40;
@@ -175,23 +200,25 @@ namespace lib102
 
             checksum = 0;
             #region 计算校核
-            checksum+=((byte)(Value & 0x00FF));
+            checksum += ((byte)(Value & 0x00FF));
             checksum += ((byte)((Value & 0x00FF00) >> 2));
-            checksum += ((byte)((Value & 0x00FF0000) >> 4));
-            checksum += ((byte)((Value & 0x00FF000000) >> 6));
+            if (BytesOfValue > 2)
+                checksum += ((byte)((Value & 0x00FF0000) >> 4));
+            if (BytesOfValue > 3)
+                checksum += ((byte)((Value & 0x00FF000000) >> 6));
             checksum += tmp;
             #endregion
-            frame.SetNextByte(tmp);
+            frame.SetNextByte(checksum);
         }
     }
 
     /// <summary>
-    /// 记账（计费）点能累计量  3字节量
+    /// 记账（计费）电能累计量  3字节量
     /// <para>非连续</para>
     /// <para>信息对象地址+电能累计量+校核</para>
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// </summary>
-    public class IntegratedTotalsWith3Byte:IntegratedTotals
+    public class IntegratedTotalsWith3Byte : IntegratedTotals
     {
         /// <summary>
         /// 类型标识M_IT_TB_2（3），记账电能累计量，每个量占3字节，表示范围：-999 999~+999 999
@@ -214,6 +241,14 @@ namespace lib102
         }
 
         /// <summary>
+        /// 覆写这个函数，变更变量字节数为3
+        /// </summary>
+        protected override void UpdateBytesOfValue()
+        {
+            BytesOfValue = 3;
+        }
+
+        /// <summary>
         /// 使用基本信息创建
         /// </summary>
         /// <param name="ioa"></param>
@@ -223,7 +258,7 @@ namespace lib102
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
         public IntegratedTotalsWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
-            : base(ioa,val,carry,counterAdj,invalid,sn)
+            : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
 
@@ -236,73 +271,13 @@ namespace lib102
         internal IntegratedTotalsWith3Byte(byte[] msg, int startIndex, bool isSquence) :
             base(msg, startIndex, isSquence)
         {
-            if (!isSquence)
-                startIndex++; /* skip IOA */
-            //3字节的数据
-            Value = msg[startIndex++];
-            Value += msg[startIndex++] * 0x100;
-            Value += msg[startIndex++] * 0x10000;
-
-
-            //第4字节的信息数据
-            byte tmp = msg[startIndex++];
-            Invalid = ((tmp & 0x80) != 0);
-            CounterAdjusted = ((tmp & 0x40) != 0);
-            Carry = ((tmp & 0x20) != 0);
-            SerialNo = tmp * 0x1F;
-            //校核
-            checksum = msg[startIndex++];
-
-            #region 计算校核
-            byte checksum1 = 0;
-            checksum1 += ((byte)(Value & 0x00FF));
-            checksum1 += ((byte)((Value & 0x00FF00) >> 2));
-            checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
-            checksum1 += tmp;
-
-            if (checksum != checksum1)
-            {
-                Console.WriteLine("校核检验错误");
-            }
-            #endregion
-        }
-
-        /// <summary>
-        /// 将信息编码进入frame
-        /// </summary>
-        /// <param name="frame"></param>
-        /// <param name="isSequence"></param>
-        internal override void Encode(Frame frame, bool isSequence)
-        {
-            base.Encode(frame, isSequence);
-            //3字节的数据
-            frame.SetNextByte((byte)(Value & 0x00FF));
-            frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
-            frame.SetNextByte((byte)((Value & 0x00FF0000) >> 4));
-
-            //第4字节
-            byte tmp = 0;
-            if (Invalid) tmp |= 0x80;
-            if (CounterAdjusted) tmp |= 0x40;
-            if (Carry) tmp |= 0x20;
-            tmp |= (byte)(serialNo & 0x1F);
-            frame.SetNextByte(tmp);
-
-            checksum = 0;
-            #region 计算校核
-            checksum += ((byte)(Value & 0x00FF));
-            checksum += ((byte)((Value & 0x00FF00) >> 2));
-            checksum += ((byte)((Value & 0x00FF0000) >> 4));
-            checksum += tmp;
-            #endregion
-            frame.SetNextByte(tmp);
         }
 
     }
 
 
     /// <summary>
-    /// 记账（计费）点能累计量  2字节量
+    /// 记账（计费）电能累计量  2字节量
     /// <para>非连续</para>
     /// <para>信息对象地址+电能累计量+校核</para>
     /// <para>所有信息对象最后，增加一个5字节时标</para>
@@ -328,6 +303,13 @@ namespace lib102
                 return false;
             }
         }
+        /// <summary>
+        /// 覆写这个函数，变更变量字节数为2
+        /// </summary>
+        protected override void UpdateBytesOfValue()
+        {
+            BytesOfValue = 2;
+        }
 
         /// <summary>
         /// 使用基本信息创建
@@ -352,62 +334,6 @@ namespace lib102
         internal IntegratedTotalsWith2Byte(byte[] msg, int startIndex, bool isSquence) :
             base(msg, startIndex, isSquence)
         {
-            if (!isSquence)
-                startIndex++; /* skip IOA */
-            //2字节的数据
-            Value = msg[startIndex++];
-            Value += msg[startIndex++] * 0x100;
-
-
-            //第3字节的信息数据
-            byte tmp = msg[startIndex++];
-            Invalid = ((tmp & 0x80) != 0);
-            CounterAdjusted = ((tmp & 0x40) != 0);
-            Carry = ((tmp & 0x20) != 0);
-            SerialNo = tmp * 0x1F;
-            //校核
-            checksum = msg[startIndex++];
-
-            #region 计算校核
-            byte checksum1 = 0;
-            checksum1 += ((byte)(Value & 0x00FF));
-            checksum1 += ((byte)((Value & 0x00FF00) >> 2));
-            checksum1 += tmp;
-
-            if (checksum != checksum1)
-            {
-                Console.WriteLine("校核检验错误");
-            }
-            #endregion
-        }
-
-        /// <summary>
-        /// 将信息编码进入frame
-        /// </summary>
-        /// <param name="frame"></param>
-        /// <param name="isSequence"></param>
-        internal override void Encode(Frame frame, bool isSequence)
-        {
-            base.Encode(frame, isSequence);
-            //2字节的数据
-            frame.SetNextByte((byte)(Value & 0x00FF));
-            frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
-
-            //第3字节
-            byte tmp = 0;
-            if (Invalid) tmp |= 0x80;
-            if (CounterAdjusted) tmp |= 0x40;
-            if (Carry) tmp |= 0x20;
-            tmp |= (byte)(serialNo & 0x1F);
-            frame.SetNextByte(tmp);
-
-            checksum = 0;
-            #region 计算校核
-            checksum += ((byte)(Value & 0x00FF));
-            checksum += ((byte)((Value & 0x00FF00) >> 2));
-            checksum += tmp;
-            #endregion
-            frame.SetNextByte(tmp);
         }
 
     }
