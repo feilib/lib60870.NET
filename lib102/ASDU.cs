@@ -416,28 +416,68 @@ namespace lib102
                 case TypeID.M_SP_TA_2: /* 1 单位遥信 */
                     //1个字节地址+ 1个字节内容+ 7个字节的时标
                     elementSize = 1 + 1 + 7;
-                    retVal = new SinglePointInformation(parameters, payload, index * elementSize, false);
+                    retVal = new SinglePointInformation(payload, index * elementSize, false);
                     break;
 
                 case TypeID.M_IT_TA_2: /* 2 */
-
-                    elementSize = 4;
-
+                    //1字节地址+4字节数据+1字节标志位+1字节校核
+                    elementSize = 1 + 4 + 1 + 1;
+                    retVal = new IntegratedTotals(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TB_2: /* 3 */
+                    //1字节地址+3字节数据+1字节标志位+1字节校核
+                    elementSize = 1 + 3 + 1 + 1;
+                    retVal = new IntegratedTotalsWith3Byte(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TC_2: /* 4 */
+                    //1字节地址+2字节数据+1字节标志位+1字节校核
+                    elementSize = 1 + 2 + 1 + 1;
+                    retVal = new IntegratedTotalsWith2Byte(payload, index * elementSize, false);
                     break;
                 case TypeID.M_IT_TD_2: /* 5 */
-
-                    elementSize = 4;
-
+                    //1字节地址+4字节数据+1字节标志位+1字节校核
+                    elementSize = 1 + 4 + 1 + 1;
+                    retVal = new IntegratedPeriod(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TE_2: /* 6 */
+                    //1字节地址+3字节数据+1字节标志位+1字节校核
+                    elementSize = 1 + 3 + 1 + 1;
+                    retVal = new IntegratedPeriodWith3Byte(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TF_2: /* 7 */
+                    //1字节地址+2字节数据+1字节标志位+1字节校核
+                    elementSize = 1 + 2 + 1 + 1;
+                    retVal = new IntegratedPeriodWith2Byte(payload, index * elementSize, false);
                     break;
                 case TypeID.M_IT_TG_2: /* 8 */
-
-                    elementSize = 4;
-
+                    //1字节地址+4字节内容+1字节标志位
+                    elementSize = 1 + 4 + 1;
+                    retVal = new OperationalIntegratedTotals(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TH_2: /* 9 */
+                    //1字节地址+3字节内容+1字节标志位
+                    elementSize = 1 + 3 + 1;
+                    retVal = new OperationalIntegratedTotalsWith3Byte(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TI_2: /* 10 */
+                    //1字节地址+3字节内容+1字节标志位
+                    elementSize = 1 + 2 + 1;
+                    retVal = new OperationalIntegratedTotalsWith2Byte(payload, index * elementSize, false);
                     break;
                 case TypeID.M_IT_TK_2: /* 11 */
-
-                    elementSize = 4;
-
+                    //1字节地址+4字节内容+1字节标志位
+                    elementSize = 1 + 4 + 1;
+                    retVal = new OperationalIntegratedPeriod(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TL_2: /* 12 */
+                    //1字节地址+3字节内容+1字节标志位
+                    elementSize = 1 + 3 + 1;
+                    retVal = new OperationalIntegratedPeriodWith3Byte(payload, index * elementSize, false);
+                    break;
+                case TypeID.M_IT_TM_2: /* 13 */
+                    //1字节地址+2字节内容+1字节标志位
+                    elementSize = 1 + 2 + 1;
+                    retVal = new OperationalIntegratedPeriodWith2Byte(payload, index * elementSize, false);
                     break;
                 case TypeID.M_EI_NA_2: /* 70 */
 
