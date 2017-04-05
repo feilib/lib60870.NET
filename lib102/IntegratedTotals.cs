@@ -106,6 +106,7 @@ namespace lib102
             }
             set
             {
+                serialNo = value;
                 if (value < 0) serialNo = 0;
                 if (value > 31) serialNo = 31;
             }
@@ -171,11 +172,11 @@ namespace lib102
                 #region 计算校核
                 byte checksum1 = 0;
                 checksum1 += ((byte)(Value & 0x00FF));
-                checksum1 += ((byte)((Value & 0x00FF00) >> 2));
+                checksum1 += ((byte)((Value & 0x00FF00) >> 8));
                 if (BytesOfValue > 2)
-                    checksum1 += ((byte)((Value & 0x00FF0000) >> 4));
+                    checksum1 += ((byte)((Value & 0x00FF0000) >> 16));
                 if (BytesOfValue > 3)
-                    checksum1 += ((byte)((Value & 0x00FF000000) >> 6));
+                    checksum1 += ((byte)((Value & 0x00FF000000) >> 24));
                 checksum1 += tmp;
 
                 if (checksum != checksum1)
@@ -199,11 +200,11 @@ namespace lib102
             UpdateHasCheckSum();
             //4字节的数据
             frame.SetNextByte((byte)(Value & 0x00FF));
-            frame.SetNextByte((byte)((Value & 0x00FF00) >> 2));
+            frame.SetNextByte((byte)((Value & 0x00FF00) >> 8));
             if (BytesOfValue > 2)
-                frame.SetNextByte((byte)((Value & 0x00FF0000) >> 4));
+                frame.SetNextByte((byte)((Value & 0x00FF0000) >> 16));
             if (BytesOfValue > 3)
-                frame.SetNextByte((byte)((Value & 0x00FF000000) >> 6));
+                frame.SetNextByte((byte)((Value & 0x00FF000000) >> 24));
 
             //下一字节
             byte tmp = 0;
@@ -219,11 +220,11 @@ namespace lib102
                 checksum = 0;
                 #region 计算校核
                 checksum += ((byte)(Value & 0x00FF));
-                checksum += ((byte)((Value & 0x00FF00) >> 2));
+                checksum += ((byte)((Value & 0x00FF00) >> 8));
                 if (BytesOfValue > 2)
-                    checksum += ((byte)((Value & 0x00FF0000) >> 4));
+                    checksum += ((byte)((Value & 0x00FF0000) >> 16));
                 if (BytesOfValue > 3)
-                    checksum += ((byte)((Value & 0x00FF000000) >> 6));
+                    checksum += ((byte)((Value & 0x00FF000000) >> 24));
                 checksum += tmp;
                 #endregion
                 frame.SetNextByte(checksum);
