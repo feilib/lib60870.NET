@@ -13,6 +13,7 @@ namespace testserver
             TestIntegrate();
             TestEndOfInit();
             TestManufacture();
+            TestCurrentTime();
         }
 
         private static void TestSinglePoint()
@@ -151,6 +152,41 @@ namespace testserver
             ASDU na = new ASDU(para, aa, length + 4 + 2);
 
             InformationObject io = na.GetElement(0);
+        }
+
+        private static void TestCurrentTime()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlUp lc = new LinkControlUp();
+            lc.ACD = false;
+            lc.DFC = false;
+            lc.FuncCode = LinkFunctionCodeUp.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            ASDU asdu = new ASDU(CauseOfTransmission.REQUEST, false, false, 1, RecordAddress.Default, false);
+
+            CurrentTime ct = new CurrentTime(new CP56Time2b(new DateTime(2007, 8, 18, 6, 21, 1, 520)));
+            asdu.AddInformationObject(ct);
+
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+            byte[] aa = frame.GetBuffer();
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+
+            InformationObject io = na.GetElement(0);
+
+
         }
     }
 }

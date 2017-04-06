@@ -486,13 +486,13 @@ namespace lib102
                     break;
                 case TypeID.P_MP_NA_2: /* 71 */
                     //1字节日期+1字节制造厂编码+4字节产品编码
-                    elementSize = 1+1+4;
+                    elementSize = 1 + 1 + 4;
                     retVal = new ManufacturerSpec(payload, index * elementSize);
                     break;
                 case TypeID.M_TI_TA_2: /* 72 */
-
-                    elementSize = 4;
-
+                    //7字节时标
+                    elementSize = 7;
+                    retVal = new CurrentTime(payload, index * elementSize);
                     break;
                 case TypeID.C_RD_NA_2: /* 100 */
 

@@ -45,6 +45,7 @@
     <Compile Include="ConnectionParameters.cs" />
     <Compile Include="CP40Time2b.cs" />
     <Compile Include="CP56Time2b.cs" />
+    <Compile Include="CurrentTime.cs" />
     <Compile Include="EndOfInit.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="InformationObject.cs" />
