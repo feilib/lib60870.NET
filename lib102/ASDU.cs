@@ -480,9 +480,9 @@ namespace lib102
                     retVal = new OperationalIntegratedPeriodWith2Byte(payload, index * elementSize, false);
                     break;
                 case TypeID.M_EI_NA_2: /* 70 */
-
-                    elementSize = 4;
-
+                    //字节地址+1字节内容
+                    elementSize = 2;
+                    retVal = new EndOfInit(payload, index * elementSize, false);
                     break;
                 case TypeID.P_MP_NA_2: /* 71 */
 
