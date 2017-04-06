@@ -480,14 +480,14 @@ namespace lib102
                     retVal = new OperationalIntegratedPeriodWith2Byte(payload, index * elementSize, false);
                     break;
                 case TypeID.M_EI_NA_2: /* 70 */
-                    //字节地址+1字节内容
+                    //1字节地址+1字节内容
                     elementSize = 2;
                     retVal = new EndOfInit(payload, index * elementSize, false);
                     break;
                 case TypeID.P_MP_NA_2: /* 71 */
-
-                    elementSize = 4;
-
+                    //1字节日期+1字节制造厂编码+4字节产品编码
+                    elementSize = 1+1+4;
+                    retVal = new ManufacturerSpec(payload, index * elementSize);
                     break;
                 case TypeID.M_TI_TA_2: /* 72 */
 

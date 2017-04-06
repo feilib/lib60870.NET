@@ -12,6 +12,7 @@ namespace testserver
             TestSinglePoint();
             TestIntegrate();
             TestEndOfInit();
+            TestManufacture();
         }
 
         private static void TestSinglePoint()
@@ -103,6 +104,39 @@ namespace testserver
             ASDU asdu = new ASDU(CauseOfTransmission.INITIALIZED, false, false, 1, RecordAddress.Default, false);
             EndOfInit eoi = new EndOfInit(CauseOfInit.LocalPowerOn, false);
             asdu.AddInformationObject(eoi);
+
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+            byte[] aa = frame.GetBuffer();
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+
+            InformationObject io = na.GetElement(0);
+        }
+
+        private static void TestManufacture()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlUp lc = new LinkControlUp();
+            lc.ACD = false;
+            lc.DFC = false;
+            lc.FuncCode = LinkFunctionCodeUp.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            ASDU asdu = new ASDU(CauseOfTransmission.INITIALIZED, false, false, 1, RecordAddress.Default, false);
+
+            ManufacturerSpec ms = new ManufacturerSpec(0, 1, 0, 0x05040302);
+            asdu.AddInformationObject(ms);
 
             asdu.Encode(frame, para);
 
