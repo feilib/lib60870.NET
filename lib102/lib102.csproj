@@ -40,34 +40,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ASDU.cs" />
-    <Compile Include="CauseOfTransmission.cs" />
-    <Compile Include="ConnectionParameters.cs" />
-    <Compile Include="CP40Time2b.cs" />
-    <Compile Include="CP56Time2b.cs" />
-    <Compile Include="CurrentTime.cs" />
-    <Compile Include="EndOfInit.cs" />
-    <Compile Include="Frame.cs" />
-    <Compile Include="InformationObject.cs" />
-    <Compile Include="IntegratedPeriod.cs" />
-    <Compile Include="IntegratedTotals.cs" />
-    <Compile Include="LinkControl.cs" />
-    <Compile Include="ManufacturerSpec.cs" />
-    <Compile Include="OperationalIntegratedPeriod.cs" />
-    <Compile Include="OperationalIntegratedTotals.cs" />
+    <Compile Include="CommonMsg\ASDU.cs" />
+    <Compile Include="basicTypes\CauseOfTransmission.cs" />
+    <Compile Include="CommonMsg\ConnectionParameters.cs" />
+    <Compile Include="basicTypes\CP40Time2b.cs" />
+    <Compile Include="basicTypes\CP56Time2b.cs" />
+    <Compile Include="ReportMsg\CurrentTime.cs" />
+    <Compile Include="ReportMsg\EndOfInit.cs" />
+    <Compile Include="CommonMsg\Frame.cs" />
+    <Compile Include="CommonMsg\InformationObject.cs" />
+    <Compile Include="ReportMsg\IntegratedPeriod.cs" />
+    <Compile Include="ReportMsg\IntegratedTotals.cs" />
+    <Compile Include="CommonMsg\LinkControl.cs" />
+    <Compile Include="ReportMsg\ManufacturerSpec.cs" />
+    <Compile Include="ReportMsg\OperationalIntegratedPeriod.cs" />
+    <Compile Include="ReportMsg\OperationalIntegratedTotals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NoInformationObject.cs" />
-    <Compile Include="ReadAccountingIT.cs" />
-    <Compile Include="ReadOperationalIT.cs" />
-    <Compile Include="ReadPeriodAIT.cs" />
-    <Compile Include="ReadPeriodOIT.cs" />
-    <Compile Include="ReadSinglePoint.cs" />
-    <Compile Include="RecordAddress.cs" />
-    <Compile Include="SinglePointInformation.cs" />
-    <Compile Include="SyncTime.cs" />
-    <Compile Include="SystemUtils.cs" />
-    <Compile Include="T102Frame.cs" />
-    <Compile Include="TypeID.cs" />
+    <Compile Include="ControlMsg\NoInformationObject.cs" />
+    <Compile Include="ControlMsg\ReadAccountingIT.cs" />
+    <Compile Include="ControlMsg\ReadOperationalIT.cs" />
+    <Compile Include="ControlMsg\ReadPeriodAIT.cs" />
+    <Compile Include="ControlMsg\ReadPeriodOIT.cs" />
+    <Compile Include="ControlMsg\ReadSinglePoint.cs" />
+    <Compile Include="basicTypes\RecordAddress.cs" />
+    <Compile Include="ReportMsg\SinglePointInformation.cs" />
+    <Compile Include="ControlMsg\SyncTime.cs" />
+    <Compile Include="CommonMsg\SystemUtils.cs" />
+    <Compile Include="CommonMsg\T102Frame.cs" />
+    <Compile Include="basicTypes\TypeID.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
