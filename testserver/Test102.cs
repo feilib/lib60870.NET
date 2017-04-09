@@ -20,6 +20,10 @@ namespace testserver
             TestReadSinglePointWithRange();
 
             TestReadCurrentTime();
+
+
+            TestReadAccountingIT();
+            TestReadAccountingITWithAddressRange();
         }
 
         private static void TestSinglePoint()
@@ -346,7 +350,7 @@ namespace testserver
 
             T102Frame frame = new T102Frame(lc, para);
 
-            ASDU asdu = new ASDU(TypeID.C_TI_NA_2,CauseOfTransmission.REQUEST, false, false, 1, RecordAddress.Default, false);
+            ASDU asdu = new ASDU(TypeID.C_TI_NA_2, CauseOfTransmission.REQUEST, false, false, 1, RecordAddress.Default, false);
 
             asdu.Encode(frame, para);
 
@@ -377,6 +381,98 @@ namespace testserver
             //镜像报文
             byte[] bb = frame2.GetBuffer();
         }
+
+        private static void TestReadAccountingIT()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlDown lc = new LinkControlDown();
+            lc.FCB = false;
+            lc.FCV = true;
+            lc.FuncCode = LinkFunctionCodeDown.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            //没有信息体，直接做个ASDU就好了。。。
+            ASDU asdu = new ASDU(TypeID.C_CI_NA_2, CauseOfTransmission.ACTIVATION, false, false, 1, RecordAddress.Default, false);
+
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+            byte[] aa = frame.GetBuffer();
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            //解析
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+            //无数据
+            na.Cot = CauseOfTransmission.NO_RECORD;
+
+            LinkControlUp lc2 = new LinkControlUp();
+            lc2.ACD = false;
+            lc2.DFC = false;
+            lc2.FuncCode = LinkFunctionCodeUp.NoData;
+
+            T102Frame frame2 = new T102Frame(lc2, para);
+
+            na.Encode(frame2, para);
+            frame2.PrepareToSend();
+            //镜像报文
+            byte[] bb = frame2.GetBuffer();
+        }
+
+        private static void TestReadAccountingITWithAddressRange()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlDown lc = new LinkControlDown();
+            lc.FCB = false;
+            lc.FCV = true;
+            lc.FuncCode = LinkFunctionCodeDown.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            ASDU asdu = new ASDU(CauseOfTransmission.ACTIVATION, false, false, 1, RecordAddress.Default, false);
+            ReadAccountingITWithAddressRange ar = new lib102.ReadAccountingITWithAddressRange(3, 7);
+            asdu.AddInformationObject(ar);
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+            //todo 书上实例报文，记录地址是03，这个有点扯。。。
+            byte[] aa = frame.GetBuffer();
+
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            //解析
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+            InformationObject sp = na.GetElement(0);
+            //无数据
+            na.Cot = CauseOfTransmission.NO_RECORD;
+
+            LinkControlUp lc2 = new LinkControlUp();
+            lc2.ACD = false;
+            lc2.DFC = false;
+            lc2.FuncCode = LinkFunctionCodeUp.NoData;
+
+            T102Frame frame2 = new T102Frame(lc2, para);
+
+            na.Encode(frame2, para);
+            frame2.PrepareToSend();
+            //镜像报文
+            byte[] bb = frame2.GetBuffer();
+        }
+
 
     }
 }

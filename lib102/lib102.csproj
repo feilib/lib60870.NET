@@ -57,6 +57,7 @@
     <Compile Include="OperationalIntegratedTotals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NoInformationObject.cs" />
+    <Compile Include="ReadAccountingIT.cs" />
     <Compile Include="ReadSinglePoint.cs" />
     <Compile Include="RecordAddress.cs" />
     <Compile Include="SinglePointInformation.cs" />
