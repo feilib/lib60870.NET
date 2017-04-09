@@ -49,12 +49,12 @@
     <Compile Include="ReportMsg\EndOfInit.cs" />
     <Compile Include="CommonMsg\Frame.cs" />
     <Compile Include="CommonMsg\InformationObject.cs" />
-    <Compile Include="ReportMsg\IntegratedPeriod.cs" />
+    <Compile Include="ReportMsg\PeriodIT.cs" />
     <Compile Include="ReportMsg\IntegratedTotals.cs" />
     <Compile Include="CommonMsg\LinkControl.cs" />
     <Compile Include="ReportMsg\ManufacturerSpec.cs" />
-    <Compile Include="ReportMsg\OperationalIntegratedPeriod.cs" />
-    <Compile Include="ReportMsg\OperationalIntegratedTotals.cs" />
+    <Compile Include="ReportMsg\PeriodOperationalIT.cs" />
+    <Compile Include="ReportMsg\OperationalIT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ControlMsg\NoInformationObject.cs" />
     <Compile Include="ControlMsg\ReadAccountingIT.cs" />

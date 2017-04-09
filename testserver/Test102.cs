@@ -82,7 +82,7 @@ namespace testserver
             ASDU asdu = new ASDU(CauseOfTransmission.REQUEST, false, false, 1, RecordAddress.Total, false);
             CP40Time2b t = new CP40Time2b(new DateTime(2007, 8, 18, 6, 21, 0));
 
-            OperationalIntegratedTotalsWith3Byte oit = new OperationalIntegratedTotalsWith3Byte(6, 0x030201, false, false, false, 0x12);
+            OperationalITWith3Byte oit = new OperationalITWith3Byte(6, 0x030201, false, false, false, 0x12);
             asdu.AddInformationObject(oit);
 
             asdu.Encode(frame, para);

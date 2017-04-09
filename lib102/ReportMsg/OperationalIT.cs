@@ -12,7 +12,7 @@ namespace lib102
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// <para>不含校核</para>
     /// </summary>
-    public class OperationalIntegratedTotals : IntegratedTotals
+    public class OperationalIT : IntegratedTotals
     {
         /// <summary>
         /// 类型标识M_IT_TG_2（8），运行电能累计量，每个量占4字节，表示范围：-99 999 999~+99 999 999
@@ -49,7 +49,7 @@ namespace lib102
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public OperationalIntegratedTotals(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public OperationalIT(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -60,7 +60,7 @@ namespace lib102
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal OperationalIntegratedTotals(byte[] msg, int startIndex, bool isSquence)
+        internal OperationalIT(byte[] msg, int startIndex, bool isSquence)
            : base(msg, startIndex, isSquence)
         {
         }
@@ -73,7 +73,7 @@ namespace lib102
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// <para>不含校核</para>
     /// </summary>
-    public class OperationalIntegratedTotalsWith3Byte : IntegratedTotalsWith3Byte
+    public class OperationalITWith3Byte : IntegratedTotalsWith3Byte
     {
         /// <summary>
         /// 类型标识M_IT_TG_2（9），运行电能累计量，每个量占3字节，表示范围：- 999 999~+ 999 999
@@ -110,7 +110,7 @@ namespace lib102
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public OperationalIntegratedTotalsWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public OperationalITWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -121,7 +121,7 @@ namespace lib102
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal OperationalIntegratedTotalsWith3Byte(byte[] msg, int startIndex, bool isSquence)
+        internal OperationalITWith3Byte(byte[] msg, int startIndex, bool isSquence)
            : base(msg, startIndex, isSquence)
         {
         }
@@ -134,7 +134,7 @@ namespace lib102
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// <para>不含校核</para>
     /// </summary>
-    public class OperationalIntegratedTotalsWith2Byte : IntegratedTotalsWith2Byte
+    public class OperationalITWith2Byte : IntegratedTotalsWith2Byte
     {
         /// <summary>
         /// 类型标识M_IT_TG_I（10），运行电能累计量，每个量占2字节，表示范围：-999~+ 999
@@ -171,7 +171,7 @@ namespace lib102
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public OperationalIntegratedTotalsWith2Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public OperationalITWith2Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -182,7 +182,7 @@ namespace lib102
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal OperationalIntegratedTotalsWith2Byte(byte[] msg, int startIndex, bool isSquence)
+        internal OperationalITWith2Byte(byte[] msg, int startIndex, bool isSquence)
            : base(msg, startIndex, isSquence)
         {
         }

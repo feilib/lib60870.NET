@@ -6,7 +6,7 @@
     /// <para>信息对象地址+电能累计量+校核</para>
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// </summary>
-    public class IntegratedPeriod : IntegratedTotals
+    public class PeriodIT : IntegratedTotals
     {
         /// <summary>
         /// 类型标识M_IT_TD_2（5），记账电能累计量，每个量占4字节，表示范围：-99 999 999~+99 999 999
@@ -37,7 +37,7 @@
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public IntegratedPeriod(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public PeriodIT(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -48,7 +48,7 @@
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal IntegratedPeriod(byte[] msg, int startIndex, bool isSquence) :
+        internal PeriodIT(byte[] msg, int startIndex, bool isSquence) :
             base(msg, startIndex, isSquence)
         {
         }
@@ -61,7 +61,7 @@
     /// <para>信息对象地址+电能累计量+校核</para>
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// </summary>
-    public class IntegratedPeriodWith3Byte : IntegratedTotalsWith3Byte
+    public class PeriodITWith3Byte : IntegratedTotalsWith3Byte
     {
         /// <summary>
         /// 类型标识M_IT_TE_2（6），记账电能累计量，每个量占3字节，表示范围：- 999 999~+999 999
@@ -92,7 +92,7 @@
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public IntegratedPeriodWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public PeriodITWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -103,7 +103,7 @@
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal IntegratedPeriodWith3Byte(byte[] msg, int startIndex, bool isSquence)
+        internal PeriodITWith3Byte(byte[] msg, int startIndex, bool isSquence)
             : base(msg, startIndex, isSquence)
         {
         }
@@ -116,7 +116,7 @@
     /// <para>信息对象地址+电能累计量+校核</para>
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// </summary>
-    public class IntegratedPeriodWith2Byte : IntegratedTotalsWith2Byte
+    public class PeriodITWith2Byte : IntegratedTotalsWith2Byte
     {
         /// <summary>
         /// 类型标识M_IT_TF_2（7），记账电能累计量，每个量占2字节，表示范围：- 999~+ 999
@@ -147,7 +147,7 @@
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public IntegratedPeriodWith2Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public PeriodITWith2Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -158,7 +158,7 @@
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal IntegratedPeriodWith2Byte(byte[] msg, int startIndex, bool isSquence)
+        internal PeriodITWith2Byte(byte[] msg, int startIndex, bool isSquence)
             : base(msg, startIndex, isSquence)
         {
         }

@@ -12,7 +12,7 @@ namespace lib102
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// <para>不含校核</para>
     /// </summary>
-    class OperationalIntegratedPeriod : IntegratedTotals
+    class PeriodOperationalIT : IntegratedTotals
     {
         /// <summary>
         /// 类型标识M_IT_TK_2（11），周期复位的运行电能累计量，每个量占4字节，表示范围：-99 999 999~+99 999 999
@@ -49,7 +49,7 @@ namespace lib102
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public OperationalIntegratedPeriod(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public PeriodOperationalIT(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -60,7 +60,7 @@ namespace lib102
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal OperationalIntegratedPeriod(byte[] msg, int startIndex, bool isSquence)
+        internal PeriodOperationalIT(byte[] msg, int startIndex, bool isSquence)
            : base(msg, startIndex, isSquence)
         {
         }
@@ -73,7 +73,7 @@ namespace lib102
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// <para>不含校核</para>
     /// </summary>
-    class OperationalIntegratedPeriodWith3Byte : IntegratedTotalsWith3Byte
+    class PeriodOperationalITWith3Byte : IntegratedTotalsWith3Byte
     {
         /// <summary>
         /// 类型标识M_IT_TL_2（12），周期复位的运行电能累计量，每个量占3字节，表示范围：-999 999~+999 999
@@ -110,7 +110,7 @@ namespace lib102
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public OperationalIntegratedPeriodWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public PeriodOperationalITWith3Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -121,7 +121,7 @@ namespace lib102
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal OperationalIntegratedPeriodWith3Byte(byte[] msg, int startIndex, bool isSquence)
+        internal PeriodOperationalITWith3Byte(byte[] msg, int startIndex, bool isSquence)
            : base(msg, startIndex, isSquence)
         {
         }
@@ -134,7 +134,7 @@ namespace lib102
     /// <para>所有信息对象最后，增加一个5字节时标</para>
     /// <para>不含校核</para>
     /// </summary>
-    class OperationalIntegratedPeriodWith2Byte : IntegratedTotalsWith2Byte
+    class PeriodOperationalITWith2Byte : IntegratedTotalsWith2Byte
     {
         /// <summary>
         /// 类型标识M_IT_TM_2（13），周期复位的运行电能累计量，每个量占2字节，表示范围：-999~+999
@@ -171,7 +171,7 @@ namespace lib102
         /// <param name="counterAdj"></param>
         /// <param name="invalid"></param>
         /// <param name="sn"></param>
-        public OperationalIntegratedPeriodWith2Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
+        public PeriodOperationalITWith2Byte(int ioa, int val, bool carry, bool counterAdj, bool invalid, int sn)
             : base(ioa, val, carry, counterAdj, invalid, sn)
         {
         }
@@ -182,7 +182,7 @@ namespace lib102
         /// <param name="msg"></param>
         /// <param name="startIndex"></param>
         /// <param name="isSquence"></param>
-        internal OperationalIntegratedPeriodWith2Byte(byte[] msg, int startIndex, bool isSquence)
+        internal PeriodOperationalITWith2Byte(byte[] msg, int startIndex, bool isSquence)
            : base(msg, startIndex, isSquence)
         {
         }
