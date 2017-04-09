@@ -25,6 +25,8 @@ namespace testserver
             TestReadAccountingIT();
             TestReadAccountingITWithAddressRange();
             TestReadAccountingITWithSpecificTime();
+            TestReadAccountingITWithSpecificTimeAndAddressRange();
+            TestReadAccountingITWithTimeRangeAndAddressRange();
         }
 
         private static void TestSinglePoint()
@@ -489,7 +491,105 @@ namespace testserver
 
             ASDU asdu = new ASDU(CauseOfTransmission.ACTIVATION, false, false, 1, RecordAddress.Default, false);
             ReadAccountingITWithSpecificTime at = new ReadAccountingITWithSpecificTime(
-                                                        new CP40Time2b(new DateTime(2007,8,18,6,21,0)));
+                                                        new CP40Time2b(new DateTime(2007, 8, 18, 6, 21, 0)));
+            asdu.AddInformationObject(at);
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+            //todo 书上实例报文，记录地址是03，这个有点扯。。。
+            byte[] aa = frame.GetBuffer();
+
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            //解析
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+            InformationObject sp = na.GetElement(0);
+            //无数据
+            na.Cot = CauseOfTransmission.NO_RECORD;
+
+            LinkControlUp lc2 = new LinkControlUp();
+            lc2.ACD = false;
+            lc2.DFC = false;
+            lc2.FuncCode = LinkFunctionCodeUp.NoData;
+
+            T102Frame frame2 = new T102Frame(lc2, para);
+
+            na.Encode(frame2, para);
+            frame2.PrepareToSend();
+            //镜像报文
+            byte[] bb = frame2.GetBuffer();
+        }
+
+        private static void TestReadAccountingITWithSpecificTimeAndAddressRange()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlDown lc = new LinkControlDown();
+            lc.FCB = true;
+            lc.FCV = true;
+            lc.FuncCode = LinkFunctionCodeDown.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            ASDU asdu = new ASDU(CauseOfTransmission.ACTIVATION, false, false, 1, RecordAddress.Default, false);
+            ReadAccountingITWithSpecificTimeAndAddressRange at = new ReadAccountingITWithSpecificTimeAndAddressRange(
+                                                    3, 7, new CP40Time2b(new DateTime(2007, 8, 18, 6, 21, 0)));
+
+            asdu.AddInformationObject(at);
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+            //todo 书上实例报文，记录地址是03，这个有点扯。。。
+            byte[] aa = frame.GetBuffer();
+
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            //解析
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+            InformationObject sp = na.GetElement(0);
+            //无数据
+            na.Cot = CauseOfTransmission.NO_RECORD;
+
+            LinkControlUp lc2 = new LinkControlUp();
+            lc2.ACD = false;
+            lc2.DFC = false;
+            lc2.FuncCode = LinkFunctionCodeUp.NoData;
+
+            T102Frame frame2 = new T102Frame(lc2, para);
+
+            na.Encode(frame2, para);
+            frame2.PrepareToSend();
+            //镜像报文
+            byte[] bb = frame2.GetBuffer();
+        }
+
+        private static void TestReadAccountingITWithTimeRangeAndAddressRange()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlDown lc = new LinkControlDown();
+            lc.FCB = false;
+            lc.FCV = true;
+            lc.FuncCode = LinkFunctionCodeDown.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            ASDU asdu = new ASDU(CauseOfTransmission.ACTIVATION, false, false, 1, RecordAddress.Default, false);
+            ReadAccountingITWithTimeRangeAndAddressRange at = new ReadAccountingITWithTimeRangeAndAddressRange(
+                                                        3, 7, new CP40Time2b(new DateTime(2007, 8, 18, 0, 0, 0)),
+                                                        new CP40Time2b(new DateTime(2007, 8, 19, 0, 0, 0)));
             asdu.AddInformationObject(at);
             asdu.Encode(frame, para);
 

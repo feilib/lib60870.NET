@@ -502,7 +502,7 @@ namespace lib102
                     break;
                 case TypeID.C_SP_NA_2: /* 101*/
                     //无信息体
-                    elementSize =0;
+                    elementSize = 0;
                     retVal = new ReadSinglePoint();
                     break;
                 case TypeID.C_SP_NB_2: /* 102 */
@@ -511,29 +511,29 @@ namespace lib102
                     retVal = new ReadSinglePointWithTimeRange(payload, index * elementSize);
                     break;
                 case TypeID.C_TI_NA_2: /* 103 */
-
-                    elementSize = 4;
-
+                    //无信息体
+                    elementSize = 0;
+                    retVal = new ReadCurrentTime();
                     break;
                 case TypeID.C_CI_NA_2: /* 104 */
-
-                    elementSize = 4;
-
+                    //无信息体
+                    elementSize = 0;
+                    retVal = new ReadAccountingIT();
                     break;
                 case TypeID.C_CI_NB_2: /* 105 */
-
-                    elementSize = 4;
-
+                    //信息体包含2个字节地址
+                    elementSize = 2;
+                    retVal = new ReadAccountingITWithAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NC_2: /* 106 */
-
-                    elementSize = 4;
-
+                    //信息体包含1个5字节时标
+                    elementSize = 5;
+                    retVal = new ReadAccountingITWithSpecificTime(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_ND_2: /* 107 */
-
-                    elementSize = 4;
-
+                    //信息体包含2个字节地址+1个5字节时标
+                    elementSize = 2 + 5;
+                    retVal = new ReadAccountingITWithSpecificTimeAndAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NE_2: /* 108 */
 
@@ -596,9 +596,9 @@ namespace lib102
 
                     break;
                 case TypeID.C_CI_NR_2: /* 120 */
-
-                    elementSize = 4;
-
+                    //信息体包含2个1字节的地址+2个5字节时标
+                    elementSize = 2 + 10;
+                    retVal = new ReadAccountingITWithTimeRangeAndAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NS_2: /* 121 */
 
