@@ -64,6 +64,7 @@
     <Compile Include="ReadSinglePoint.cs" />
     <Compile Include="RecordAddress.cs" />
     <Compile Include="SinglePointInformation.cs" />
+    <Compile Include="SyncTime.cs" />
     <Compile Include="SystemUtils.cs" />
     <Compile Include="T102Frame.cs" />
     <Compile Include="TypeID.cs" />

@@ -616,9 +616,9 @@ namespace lib102
                     retVal = new ReadPeriodOITWithTimeRangeAndAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_SYN_TA_2: /* 128 */
-
-                    elementSize = 4;
-
+                    //1个7字节时标
+                    elementSize = 7;
+                    retVal = new SyncTime(payload, index * elementSize);
                     break;
 
                 #endregion

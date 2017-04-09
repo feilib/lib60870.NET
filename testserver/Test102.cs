@@ -27,6 +27,8 @@ namespace testserver
             TestReadAccountingITWithSpecificTime();
             TestReadAccountingITWithSpecificTimeAndAddressRange();
             TestReadAccountingITWithTimeRangeAndAddressRange();
+
+            TestReadSyncTime();
         }
 
         private static void TestSinglePoint()
@@ -620,6 +622,40 @@ namespace testserver
             frame2.PrepareToSend();
             //镜像报文
             byte[] bb = frame2.GetBuffer();
+        }
+
+        private static void TestReadSyncTime()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlDown lc = new LinkControlDown();
+            lc.FCB = false;
+            lc.FCV = true;
+            lc.FuncCode = LinkFunctionCodeDown.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            ASDU asdu = new ASDU(CauseOfTransmission.SYNC_TIME, false, false, 1, RecordAddress.Default, false);
+            SyncTime st = new SyncTime(new CP56Time2b(new DateTime(2007, 8, 18, 6, 21, 1, 520)));
+            asdu.AddInformationObject(st);
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+
+            byte[] aa = frame.GetBuffer();
+
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            //解析
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+            InformationObject io = na.GetElement(0);
+
         }
 
     }
