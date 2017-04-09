@@ -42,7 +42,7 @@ namespace lib102
             }
         }
         /// <summary>
-        /// 使用时间初始化报文
+        /// 始化空报文
         /// </summary>
         public ReadManufacturerSpec()
             : base(0)
@@ -107,7 +107,7 @@ namespace lib102
             }
         }
         /// <summary>
-        /// 使用时间初始化报文
+        /// 初始化空报文
         /// </summary>
         public ReadCurrentTime()
             : base(0)

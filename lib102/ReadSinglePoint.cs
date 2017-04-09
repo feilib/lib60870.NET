@@ -45,7 +45,7 @@ namespace lib102
             }
         }
         /// <summary>
-        /// 使用时间初始化报文
+        /// 初始化报文
         /// </summary>
         public ReadSinglePoint()
             : base(0)
@@ -127,7 +127,7 @@ namespace lib102
             }
         }
         /// <summary>
-        /// 使用时间初始化报文
+        /// 使用开始、结束时间初始化报文
         /// </summary>
         /// <param name="begin">开始时间</param>
         /// <param name="end">结束时间</param>
