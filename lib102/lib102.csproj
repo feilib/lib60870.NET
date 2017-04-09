@@ -60,6 +60,7 @@
     <Compile Include="ReadAccountingIT.cs" />
     <Compile Include="ReadOperationalIT.cs" />
     <Compile Include="ReadPeriodAIT.cs" />
+    <Compile Include="ReadPeriodOIT.cs" />
     <Compile Include="ReadSinglePoint.cs" />
     <Compile Include="RecordAddress.cs" />
     <Compile Include="SinglePointInformation.cs" />
