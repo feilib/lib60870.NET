@@ -18,6 +18,8 @@ namespace testserver
             TestReadMnufacture();
             TestReadSinglePoint();
             TestReadSinglePointWithRange();
+
+            TestReadCurrentTime();
         }
 
         private static void TestSinglePoint()
@@ -316,6 +318,52 @@ namespace testserver
             InformationObject sp = na.GetElement(0);
             //无数据
             na.Cot = CauseOfTransmission.NO_RECORD;
+
+            LinkControlUp lc2 = new LinkControlUp();
+            lc2.ACD = false;
+            lc2.DFC = false;
+            lc2.FuncCode = LinkFunctionCodeUp.NoData;
+
+            T102Frame frame2 = new T102Frame(lc2, para);
+
+            na.Encode(frame2, para);
+            frame2.PrepareToSend();
+            //镜像报文
+            byte[] bb = frame2.GetBuffer();
+        }
+
+
+        private static void TestReadCurrentTime()
+        {
+            ConnectionParameters para = new ConnectionParameters();
+            para.LinkAddress = 1;
+            para.SizeOfCA = 2;
+
+            LinkControlDown lc = new LinkControlDown();
+            lc.FCB = true;
+            lc.FCV = true;
+            lc.FuncCode = LinkFunctionCodeDown.UserData;
+
+            T102Frame frame = new T102Frame(lc, para);
+
+            ASDU asdu = new ASDU(TypeID.C_TI_NA_2,CauseOfTransmission.REQUEST, false, false, 1, RecordAddress.Default, false);
+
+            asdu.Encode(frame, para);
+
+            frame.PrepareToSend();
+
+
+            byte[] aa = frame.GetBuffer();
+
+
+            int length = aa[1];
+            byte linkControl = aa[4];
+            int linkAddr = aa[5] + aa[6] * 0x100;
+
+            //解析
+            ASDU na = new ASDU(para, aa, length + 4 + 2);
+            //无ASDU
+            na.Cot = CauseOfTransmission.NO_ASDU_TYPE;
 
             LinkControlUp lc2 = new LinkControlUp();
             lc2.ACD = false;
