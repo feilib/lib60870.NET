@@ -556,24 +556,24 @@ namespace lib102
                     retVal = new ReadPeriodAITWithSpecificTimeAndAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NI_2: /* 112 */
-
-                    elementSize = 4;
-
+                    //无信息体
+                    elementSize = 0;
+                    retVal = new ReadOperationalIT();
                     break;
                 case TypeID.C_CI_NK_2: /* 113 */
-
-                    elementSize = 4;
-
+                    //信息体包含2个字节地址
+                    elementSize = 2;
+                    retVal = new ReadOperationalITWithAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NL_2: /* 114 */
-
-                    elementSize = 4;
-
+                    //信息体包含1个5字节时标
+                    elementSize = 5;
+                    retVal = new ReadOperationalITWithSpecificTime(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NM_2: /* 115 */
-
-                    elementSize = 4;
-
+                    //信息体包含2个字节地址+1个5字节时标
+                    elementSize = 2 + 5;
+                    retVal = new ReadOperationalITWithSpecificTimeAndAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NN_2: /* 116 */
 
@@ -606,9 +606,9 @@ namespace lib102
                     retVal = new ReadPeriodAITWithTimeRangeAndAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NT_2: /* 122 */
-
-                    elementSize = 4;
-
+                    //信息体包含2个1字节的地址+2个5字节时标
+                    elementSize = 2 + 10;
+                    retVal = new ReadOperationalITWithTimeRangeAndAddressRange(payload, index * elementSize);
                     break;
                 case TypeID.C_CI_NU_2: /* 123 */
 

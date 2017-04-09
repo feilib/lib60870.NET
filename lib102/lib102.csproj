@@ -58,6 +58,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NoInformationObject.cs" />
     <Compile Include="ReadAccountingIT.cs" />
+    <Compile Include="ReadOperationalIT.cs" />
     <Compile Include="ReadPeriodAIT.cs" />
     <Compile Include="ReadSinglePoint.cs" />
     <Compile Include="RecordAddress.cs" />
