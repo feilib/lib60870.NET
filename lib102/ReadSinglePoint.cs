@@ -117,7 +117,7 @@ namespace lib102
         public CP40Time2b EndTime { get; set; }
 
         /// <summary>
-        /// 不支持连续，没有信息体
+        /// 不支持连续，仅1个信息体
         /// </summary>
         override public bool SupportsSequence
         {
