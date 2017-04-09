@@ -497,19 +497,18 @@ namespace lib102
                     retVal = new CurrentTime(payload, index * elementSize);
                     break;
                 case TypeID.C_RD_NA_2: /* 100 */
-
-                    elementSize = 4;
-
+                    //无信息体
+                    retVal = new ReadManufacturerSpec();
                     break;
                 case TypeID.C_SP_NA_2: /* 101*/
-
-                    elementSize = 4;
-
+                    //无信息体
+                    elementSize =0;
+                    retVal = new ReadSinglePoint();
                     break;
                 case TypeID.C_SP_NB_2: /* 102 */
-
-                    elementSize = 4;
-
+                    //只有一个信息体，两个5字节时标
+                    elementSize = 10;
+                    retVal = new ReadSinglePointWithTimeRange(payload, index * elementSize);
                     break;
                 case TypeID.C_TI_NA_2: /* 103 */
 
